@@ -1,0 +1,6 @@
+@StageFlow.Api_HostAddress = http://localhost:5178
+
+GET {{StageFlow.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
