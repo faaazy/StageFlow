@@ -57,13 +57,9 @@ public class Festival
                     return;
                 }
                 break;
-                
-            default:
-                throw new InvalidOperationException(
-                    $"Cannot change festival status from {Status} to {newStatus}.");
         }
-        
+
         throw new InvalidOperationException(
-                    $"Cannot change festival status from {Status} to {newStatus}.");
+            $"Cannot change festival status from {Status} to {newStatus}.");
     }
 };
