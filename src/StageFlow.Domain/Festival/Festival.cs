@@ -16,7 +16,7 @@ public class Festival
 
     public string TimeZone {get;set;} = "";
 
-    public FestivalStatus Status {get; private set;}
+    public FestivalStatus Status {get; private set;} = FestivalStatus.Draft;
 
     public void ChangeStatus(FestivalStatus newStatus)
     {
