@@ -18,6 +18,8 @@ public class Festival
 
     public FestivalStatus Status {get; private set;} = FestivalStatus.Draft;
 
+    public ICollection<Stage> Stages {get; set;} = [];
+
     public void ChangeStatus(FestivalStatus newStatus)
     {
         switch (Status)
