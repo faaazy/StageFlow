@@ -8,9 +8,9 @@ public class StageConfiguration : IEntityTypeConfiguration<Stage>
 {
     public void Configure(EntityTypeBuilder<Stage> builder)
     {
-        builder.HasKey(r => r.Id);
+        builder.HasKey(s => s.Id);
 
-        builder.Property(r => r.Name)
+        builder.Property(s => s.Name)
             .IsRequired();
 
         builder.HasOne(s => s.Festival)
