@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using StageFlow.Domain.Festival;
 using StageFlow.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);

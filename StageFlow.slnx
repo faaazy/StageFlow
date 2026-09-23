@@ -6,6 +6,8 @@
     <Project Path="src/StageFlow.Infrastructure/StageFlow.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/StageFlow.IntegrationTests/StageFlow.IntegrationTests.csproj" />
     <Project Path="tests/StageFlow.UnitTests/StageFlow.UnitTests.csproj" />
   </Folder>
+  <Folder Name="/tests/StageFlow.UnitTests/" />
 </Solution>
