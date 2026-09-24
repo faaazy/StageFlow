@@ -48,10 +48,8 @@ public class FestivalStageTests : IAsyncLifetime
             TimeZone = "Europe/Tallinn"
         };
 
-        var stage = new Stage
+        var stage = new Stage("Main Stage", Guid.NewGuid())
         {
-            Id = Guid.NewGuid(),
-            Name = "Main Stage",
             Festival = festival,
             FestivalId = festival.Id
         };
@@ -61,6 +59,13 @@ public class FestivalStageTests : IAsyncLifetime
         _dbContext.Add(festival);
 
         await _dbContext.SaveChangesAsync();
+
+        _dbContext.ChangeTracker.Clear();
+
+        var savedStage = await _dbContext.Stages
+            .FirstAsync(s => s.Id == stage.Id);
+        
+        savedStage.FestivalId.Should().Be(festival.Id);
 
         var result = await _dbContext.Festivals
             .Include(f => f.Stages)
