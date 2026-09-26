@@ -10,10 +10,13 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
     public DbSet<Stage> Stages {get; set;}
 
+    public DbSet<Artist> Artists {get; set;}
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.ApplyConfiguration(new StageConfiguration());
+        modelBuilder.ApplyConfiguration(new ArtistConfiguration());
     }
 } 
