@@ -1,0 +1,17 @@
+using StageFlow.Application.Schedule;
+using StageFlow.Domain.Festival;
+using StageFlow.Infrastructure.Persistence;
+
+namespace StageFlow.Infrastructure.Schedule;
+
+public class PerformanceRepository(AppDbContext dbContext) : IPerformanceRepository
+{
+    public async Task<Performance> AddAsync(Performance performance)
+    {
+        await dbContext.Performances.AddAsync(performance);
+
+        await dbContext.SaveChangesAsync();
+
+        return performance;
+    }
+}
