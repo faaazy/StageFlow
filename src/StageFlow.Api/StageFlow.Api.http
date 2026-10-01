@@ -1,6 +1,25 @@
 @StageFlow.Api_HostAddress = http://localhost:5178
 
-GET {{StageFlow.Api_HostAddress}}/weatherforecast/
-Accept: application/json
+### PERFORMANCE POST REQUEST
 
-###
+POST {{StageFlow.Api_HostAddress}}/schedule/performances
+Content-Type: application/json
+
+{
+    "stageId": "fd57fd8b-4931-4054-a043-8ae877552b61",
+    "artistId": "2173eb99-929f-4b12-85ae-1b4433f12ebc",
+    "startTime": "2026-09-30T10:00:00Z",
+    "endTime": "2026-09-30T12:00:00Z"
+}
+
+### FAILED PERFORMANCE POST REQUEST
+
+POST {{StageFlow.Api_HostAddress}}/schedule/performances
+Content-Type: application/json
+
+{
+    "stageId": "fd57fd8b-4931-4054-a043-8ae877552b61",
+    "artistId": "2173eb99-929f-4b12-85ae-1b4433f12ebc",
+    "startTime": "2026-09-30T11:00:00Z",
+    "endTime": "2026-09-30T13:00:00Z"
+}

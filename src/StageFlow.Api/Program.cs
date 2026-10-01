@@ -1,12 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using StageFlow.Application.Schedule;
-using StageFlow.Domain.Festival;
 using StageFlow.Infrastructure.Persistence;
 using StageFlow.Infrastructure.Schedule;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
+builder.Services.AddControllers();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
@@ -24,6 +24,8 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+app.MapControllers();
 
 app.UseHttpsRedirection();
 
