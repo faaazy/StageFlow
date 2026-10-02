@@ -1,8 +1,8 @@
-@StageFlow.Api_HostAddress = http://localhost:5178
+@StageFlowHostAddress = http://localhost:5178
 
 ### PERFORMANCE POST REQUEST
 
-POST {{StageFlow.Api_HostAddress}}/schedule/performances
+POST {{StageFlowHostAddress}}/schedule/performances
 Content-Type: application/json
 
 {
@@ -14,7 +14,7 @@ Content-Type: application/json
 
 ### FAILED PERFORMANCE POST REQUEST
 
-POST {{StageFlow.Api_HostAddress}}/schedule/performances
+POST {{StageFlowHostAddress}}/schedule/performances
 Content-Type: application/json
 
 {
