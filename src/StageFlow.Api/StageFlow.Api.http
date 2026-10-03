@@ -1,5 +1,9 @@
 @StageFlowHostAddress = http://localhost:5178
 
+###
+
+GET {{StageFlowHostAddress}}/schedule/performances
+
 ### PERFORMANCE POST REQUEST
 
 POST {{StageFlowHostAddress}}/schedule/performances
