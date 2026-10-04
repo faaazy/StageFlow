@@ -19,15 +19,27 @@ builder.Services.AddScoped<IPerformanceRepository, PerformanceRepository>();
 builder.Services.AddScoped<CreatePerformanceService>();
 builder.Services.AddScoped<GetPerformancesService>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReact", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+        .AllowAnyMethod()
+        .AllowAnyHeader();
+    });
+});
+
 var app = builder.Build();
+
+app.UseHttpsRedirection();
+
+app.UseCors("AllowReact");
+
+app.MapControllers();
 
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
-
-app.MapControllers();
-
-app.UseHttpsRedirection();
 
 app.Run();
