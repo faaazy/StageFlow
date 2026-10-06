@@ -94,7 +94,7 @@ function RowSkeleton() {
     <li className="px-5 py-3.5">
       <div className="animate-pulse">
         <div
-          className={`grid gap-3 sm:grid-cols-[8.5rem_minmax(0,1fr)_10rem] sm:items-center`}
+          className={`grid gap-3 sm:items-center ${listColumnsClassName}`}
         >
           <div className="h-3.5 w-16 rounded bg-neutral-200 dark:bg-neutral-800" />
           <div className="h-3.5 w-44 rounded bg-neutral-200 dark:bg-neutral-800" />

@@ -1,89 +1,23 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { useState } from "react";
+import {
+  Clock,
+  Flag,
+  LayoutDashboard,
+  Layers,
+  type LucideIcon,
+  Mic,
+  Moon,
+  ShoppingCart,
+  Sun,
+  Ticket,
+} from "lucide-react";
 
-type NavIconName =
-  | "cart"
-  | "clock"
-  | "flag"
-  | "layers"
-  | "layout"
-  | "mic"
-  | "moon"
-  | "sun"
-  | "ticket";
-
-const iconPaths: Record<NavIconName, React.ReactNode> = {
-  layout: (
-    <>
-      <rect x="3" y="3" width="7" height="7" rx="1.5" />
-      <rect x="14" y="3" width="7" height="7" rx="1.5" />
-      <rect x="14" y="14" width="7" height="7" rx="1.5" />
-      <rect x="3" y="14" width="7" height="7" rx="1.5" />
-    </>
-  ),
-  flag: (
-    <>
-      <path d="M4.5 21V3" />
-      <path d="M4.5 4.5h12l-2.25 4.5L16.5 13.5h-12" />
-    </>
-  ),
-  clock: (
-    <>
-      <circle cx="12" cy="12" r="8.5" />
-      <path d="M12 7.25V12l3 1.75" />
-    </>
-  ),
-  mic: (
-    <>
-      <rect x="9" y="2.5" width="6" height="11" rx="3" />
-      <path d="M5.5 11a6.5 6.5 0 0 0 13 0" />
-      <path d="M12 17.5v4" />
-    </>
-  ),
-  layers: (
-    <>
-      <path d="M12 2.75 21 7.5l-9 4.75L3 7.5l9-4.75Z" />
-      <path d="m3 12.5 9 4.75 9-4.75" />
-    </>
-  ),
-  ticket: (
-    <>
-      <path d="M3 8.5V6.5a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v2a2.5 2.5 0 0 0 0 5v2a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-2a2.5 2.5 0 0 0 0-5Z" />
-      <path d="M12 6v2M12 11v2M12 16v2" />
-    </>
-  ),
-  cart: (
-    <>
-      <circle cx="9.5" cy="20" r="1" />
-      <circle cx="17.5" cy="20" r="1" />
-      <path d="M2.5 3.5h2.75l2.35 11.6a1.5 1.5 0 0 0 1.48 1.15h8.4a1.5 1.5 0 0 0 1.47-1.18L21 7H6" />
-    </>
-  ),
-  sun: (
-    <>
-      <circle cx="12" cy="12" r="4" />
-      <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
-    </>
-  ),
-  moon: <path d="M20.5 14.3A8.5 8.5 0 0 1 9.7 3.5a8.5 8.5 0 1 0 10.8 10.8Z" />,
+const navIconProps = {
+  "aria-hidden": true,
+  strokeWidth: 1.5,
+  className: "size-[18px] shrink-0",
 };
-
-function NavIcon({ name }: { name: NavIconName }) {
-  return (
-    <svg
-      aria-hidden="true"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.5}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="size-[18px] shrink-0"
-    >
-      {iconPaths[name]}
-    </svg>
-  );
-}
 
 const themeStorageKey = "stageflow-theme";
 
@@ -105,7 +39,7 @@ function ThemeToggle({
       aria-pressed={isDark}
       className="grid size-8 shrink-0 place-items-center rounded border border-neutral-200 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900 focus-visible:ring-2 focus-visible:ring-accent-600 focus-visible:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-neutral-50 dark:focus-visible:ring-accent-400"
     >
-      <NavIcon name={isDark ? "sun" : "moon"} />
+      {isDark ? <Sun {...navIconProps} /> : <Moon {...navIconProps} />}
     </button>
   );
 }
@@ -121,14 +55,14 @@ function Brand() {
   );
 }
 
-const navItems: { label: string; to?: string; icon: NavIconName }[] = [
-  { label: "Dashboard", icon: "layout" },
-  { label: "Festivals", icon: "flag" },
-  { label: "Schedule", to: "schedule", icon: "clock" },
-  { label: "Artists", icon: "mic" },
-  { label: "Stages", icon: "layers" },
-  { label: "Tickets", icon: "ticket" },
-  { label: "Orders", icon: "cart" },
+const navItems: { label: string; to?: string; icon: LucideIcon }[] = [
+  { label: "Dashboard", icon: LayoutDashboard },
+  { label: "Festivals", icon: Flag },
+  { label: "Schedule", to: "schedule", icon: Clock },
+  { label: "Artists", icon: Mic },
+  { label: "Stages", icon: Layers },
+  { label: "Tickets", icon: Ticket },
+  { label: "Orders", icon: ShoppingCart },
 ];
 
 function Sidebar({
@@ -149,9 +83,9 @@ function Sidebar({
           Operations
         </p>
         <ul className="space-y-1">
-          {navItems.map((item) =>
-            item.to ? (
-              <li key={item.label}>
+          {navItems.map((item) => (
+            <li key={item.label}>
+              {item.to ? (
                 <NavLink
                   to={item.to}
                   className={({ isActive }) =>
@@ -164,7 +98,7 @@ function Sidebar({
                 >
                   {({ isActive }) => (
                     <>
-                      <NavIcon name={item.icon} />
+                      <item.icon {...navIconProps} />
                       {item.label}
                       {isActive && (
                         <span
@@ -175,20 +109,18 @@ function Sidebar({
                     </>
                   )}
                 </NavLink>
-              </li>
-            ) : (
-              <li key={item.label}>
+              ) : (
                 <span
                   aria-disabled="true"
                   title="Not available yet"
                   className="flex cursor-default items-center gap-2.5 rounded px-2 py-2 text-[15px] text-neutral-400 dark:text-neutral-600"
                 >
-                  <NavIcon name={item.icon} />
+                  <item.icon {...navIconProps} />
                   {item.label}
                 </span>
-              </li>
-            ),
-          )}
+              )}
+            </li>
+          ))}
         </ul>
       </nav>
 
@@ -222,7 +154,7 @@ function MobileHeader({
                 }`
               }
             >
-              <NavIcon name="clock" />
+              <Clock {...navIconProps} />
               <span className="hidden sm:inline">Schedule</span>
             </NavLink>
           </li>
