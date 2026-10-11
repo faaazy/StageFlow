@@ -1,5 +1,8 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using StageFlow.Application.Auth;
 using StageFlow.Application.Schedule;
+using StageFlow.Infrastructure.Identity;
 using StageFlow.Infrastructure.Persistence;
 using StageFlow.Infrastructure.Schedule;
 
@@ -14,10 +17,20 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString);
 });
 
+builder.Services.AddIdentityCore<ApplicationUser>(options =>
+{
+    options.User.RequireUniqueEmail = true;
+    options.Password.RequiredLength = 8;
+})
+.AddRoles<IdentityRole<Guid>>()
+.AddEntityFrameworkStores<AppDbContext>();
+
 builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
 builder.Services.AddScoped<IPerformanceRepository, PerformanceRepository>();
 builder.Services.AddScoped<CreatePerformanceService>();
 builder.Services.AddScoped<GetPerformancesService>();
+builder.Services.AddScoped<IUserAccountCreator, IdentityUserAccountCreator>();
+builder.Services.AddScoped<RegisterUserService>();
 
 builder.Services.AddCors(options =>
 {

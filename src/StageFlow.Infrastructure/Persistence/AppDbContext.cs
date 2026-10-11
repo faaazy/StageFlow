@@ -1,10 +1,14 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using StageFlow.Domain.Festival;
+using StageFlow.Infrastructure.Identity;
 using StageFlow.Infrastructure.Persistence.Configurations;
 
 namespace StageFlow.Infrastructure.Persistence;
 
-public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
+public class AppDbContext(DbContextOptions<AppDbContext> options) 
+    : IdentityDbContext<ApplicationUser,IdentityRole<Guid>, Guid>(options)
 {
     public DbSet<Festival> Festivals {get; set;}
 
