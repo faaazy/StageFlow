@@ -27,3 +27,23 @@ Content-Type: application/json
     "startTime": "2026-09-30T11:00:00Z",
     "endTime": "2026-09-30T13:00:00Z"
 }
+
+### AUTH REGISTER
+
+POST {{StageFlowHostAddress}}/auth/register
+Content-Type: application/json
+
+{
+    "email": "stageflow.test@example.com",
+    "password": "StrongPass123!"
+}
+
+### AUTH REGISTER WEAK PASSWORD
+
+POST {{StageFlowHostAddress}}/auth/register
+Content-Type: application/json
+
+{
+    "email": "weak.password@example.com",
+    "password": "abc"
+}

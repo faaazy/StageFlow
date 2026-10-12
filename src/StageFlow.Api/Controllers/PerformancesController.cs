@@ -6,7 +6,9 @@ namespace StageFlow.Api.Controllers;
 
 [ApiController]
 [Route("schedule/performances")]
-public class PerformancesController(CreatePerformanceService createService, GetPerformancesService getPerformancesService) : ControllerBase
+public class PerformancesController(
+    CreatePerformanceService createService, 
+    GetPerformancesService getPerformancesService) : ControllerBase
 {
     private readonly string _apiRoute = "/schedule/performances";
 
