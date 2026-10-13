@@ -1,6 +1,4 @@
-using StageFlow.Application.Auth;
-
-namespace StageFlow.Application.Schedule;
+namespace StageFlow.Application.Auth;
 
 public class RegisterUserService(
     IUserAccountCreator accountCreator)

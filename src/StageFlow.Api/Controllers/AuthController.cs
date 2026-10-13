@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using StageFlow.Application.Schedule;
+using StageFlow.Application.Auth;
 
 namespace StageFlow.Api.Controllers;
 
