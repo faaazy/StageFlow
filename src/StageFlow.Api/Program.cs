@@ -31,6 +31,8 @@ builder.Services.AddScoped<CreatePerformanceService>();
 builder.Services.AddScoped<GetPerformancesService>();
 builder.Services.AddScoped<IUserAccountCreator, IdentityUserAccountCreator>();
 builder.Services.AddScoped<RegisterUserService>();
+builder.Services.AddScoped<IUserAuthenticator, IdentityUserAuthenticator>();
+builder.Services.AddScoped<LoginUserService>();
 
 builder.Services.AddCors(options =>
 {

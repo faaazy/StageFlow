@@ -5,7 +5,10 @@ namespace StageFlow.Api.Controllers;
 
 [ApiController]
 [Route("auth")]
-public class AuthController(RegisterUserService registerUserService) : ControllerBase
+public class AuthController(
+    RegisterUserService registerUserService,
+    LoginUserService loginUserService) 
+    : ControllerBase
 {
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterRequest request)
@@ -18,5 +21,18 @@ public class AuthController(RegisterUserService registerUserService) : Controlle
         return result.Succeeded 
             ? StatusCode(StatusCodes.Status201Created, new { userId = result.UserId }) 
             : BadRequest(result.Errors);
+    }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login(LoginRequest request)
+    {
+        var result = await loginUserService.LoginAsync(
+            request.Email,
+            request.Password
+        );
+
+        return result.Succeeded 
+            ? Ok(new { userId = result.UserId }) 
+            : Unauthorized(result.Errors);
     }
 }
