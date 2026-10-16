@@ -1,9 +1,7 @@
-using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using StageFlow.Application.Auth;
-using StageFlow.Domain.Festival;
 using StageFlow.Infrastructure.Identity;
 using StageFlow.Infrastructure.Persistence;
 using Testcontainers.PostgreSql;
