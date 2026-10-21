@@ -32,7 +32,7 @@ public class AuthController(
         );
 
         return result.Succeeded 
-            ? Ok(new { userId = result.UserId }) 
+            ? Ok(new { accessToken = result.Token }) 
             : Unauthorized(result.Errors);
     }
 }

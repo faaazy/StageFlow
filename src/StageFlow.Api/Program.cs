@@ -1,5 +1,7 @@
+using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using StageFlow.Api;
 using StageFlow.Application.Auth;
 using StageFlow.Application.Schedule;
 using StageFlow.Infrastructure.Identity;
@@ -7,6 +9,28 @@ using StageFlow.Infrastructure.Persistence;
 using StageFlow.Infrastructure.Schedule;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services
+    .AddOptions<JwtOptions>()
+    .Bind(builder.Configuration.GetSection(JwtOptions.SectionName))
+    .Validate(
+        options => !string.IsNullOrWhiteSpace(options.Issuer),
+        "JWT Issuer is required")
+    .Validate(
+        options => !string.IsNullOrWhiteSpace(options.Audience),
+        "JWT Audience is required")
+    .Validate(
+        options => !string.IsNullOrWhiteSpace(options.SigningKey),
+        "JWT SigningKey is required")
+    .Validate(
+        options => Encoding.UTF8.GetByteCount(options.SigningKey) >= 32,
+        "JWT SigningKey must be at least 32 bytes"
+    )
+    .Validate(
+        options => options.ExpiresInMinutes > 0,
+        "Expiration period should be at least 1 minute"
+    )
+    .ValidateOnStart();
 
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
@@ -33,6 +57,8 @@ builder.Services.AddScoped<IUserAccountCreator, IdentityUserAccountCreator>();
 builder.Services.AddScoped<RegisterUserService>();
 builder.Services.AddScoped<IUserAuthenticator, IdentityUserAuthenticator>();
 builder.Services.AddScoped<LoginUserService>();
+
+builder.Services.AddSingleton<IJwtTokenService, JwtTokenService>();
 
 builder.Services.AddCors(options =>
 {

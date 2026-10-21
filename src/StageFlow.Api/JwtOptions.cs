@@ -1,0 +1,14 @@
+namespace StageFlow.Api;
+
+public sealed class JwtOptions
+{
+    public const string SectionName = "Jwt";
+
+    public string Issuer { get; init; } = "";
+
+    public string Audience { get; init; } = "";
+
+    public string SigningKey { get; init; } = "";
+
+    public int ExpiresInMinutes { get; init; } = 60;
+}
