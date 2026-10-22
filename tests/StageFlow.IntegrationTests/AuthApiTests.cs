@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
@@ -15,6 +16,8 @@ public class AuthApiTests(StageFlowApiFactory factory)
     private record RegisterResponse(Guid UserId);
 
     private record LoginResponse(string AccessToken);
+
+    private record MeResponse(Guid UserId);
 
     [Fact]
     public async Task Register_WithValidData_ReturnsCreated()
@@ -155,5 +158,48 @@ public class AuthApiTests(StageFlowApiFactory factory)
             });
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task Me_WithoutToken_ReturnsUnauthorized()
+    {
+        var response = await _client.GetAsync("/auth/me");
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task Me_WithToken_ReturnsUserId()
+    {
+        var email = $"test-{Guid.NewGuid():N}@example.com";
+        var password = "StrongPass123!";
+
+        var registerResponse = await _client.PostAsJsonAsync(
+            "/auth/register",
+            new { Email = email, Password = password });
+
+        var registered = await registerResponse.Content
+            .ReadFromJsonAsync<RegisterResponse>();
+
+        var loginResponse = await _client.PostAsJsonAsync(
+            "/auth/login",
+            new { Email = email, Password = password });
+
+        var body = await loginResponse.Content.ReadFromJsonAsync<LoginResponse>();
+
+        body.Should().NotBeNull();
+        body.AccessToken.Should().NotBeNullOrWhiteSpace();
+
+        var request = new HttpRequestMessage(HttpMethod.Get, "/auth/me");
+        request.Headers.Authorization =
+            new AuthenticationHeaderValue("Bearer", body.AccessToken);
+
+        var response = await _client.SendAsync(request);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var me = await response.Content.ReadFromJsonAsync<MeResponse>();
+
+        me!.UserId.Should().Be(registered!.UserId);
     }
 }

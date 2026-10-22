@@ -1,3 +1,5 @@
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StageFlow.Application.Auth;
 
@@ -34,5 +36,14 @@ public class AuthController(
         return result.Succeeded 
             ? Ok(new { accessToken = result.Token }) 
             : Unauthorized(result.Errors);
+    }
+
+    [Authorize]
+    [HttpGet("me")]
+    public IActionResult GetUserId()
+    {
+        var sub = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+
+        return Ok(new {userId = sub});
     }
 }

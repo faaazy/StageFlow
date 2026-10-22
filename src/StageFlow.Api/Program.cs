@@ -1,6 +1,9 @@
 using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using StageFlow.Api;
 using StageFlow.Application.Auth;
 using StageFlow.Application.Schedule;
@@ -31,6 +34,29 @@ builder.Services
         "Expiration period should be at least 1 minute"
     )
     .ValidateOnStart();
+
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer();
+
+builder.Services
+    .AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
+    .Configure<IOptions<JwtOptions>>((bearerOptions, jwtOptions) =>
+    {
+        var jwt = jwtOptions.Value;
+        bearerOptions.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = jwt.Issuer,
+            ValidateAudience = true,
+            ValidAudience = jwt.Audience,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.SigningKey)),
+            ValidateLifetime = true
+        };
+
+        bearerOptions.MapInboundClaims = false;
+    });
 
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
@@ -75,6 +101,9 @@ var app = builder.Build();
 app.UseHttpsRedirection();
 
 app.UseCors("AllowReact");
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 
