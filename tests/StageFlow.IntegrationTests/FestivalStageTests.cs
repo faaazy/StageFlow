@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using StageFlow.Domain.Festival;
 using StageFlow.Infrastructure.Persistence;
+using StageFlow.IntegrationTests.Infrastructure;
 using Testcontainers.PostgreSql;
 
 namespace StageFlow.IntegrationTests;
@@ -38,9 +39,12 @@ public class FestivalStageTests : IAsyncLifetime
     [Fact]
     public async Task Should_load_stages_for_festival()
     {
+        var organizerId = await TestData.CreateUserAsync(_dbContext);
+
         var festival = new Festival
         {
             Id = Guid.NewGuid(),
+            OrganizerId = organizerId,
             Name = "Test Festival",
             Location = "Tallinn",
             StartDate = DateTime.UtcNow,

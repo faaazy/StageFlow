@@ -5,6 +5,7 @@ using StageFlow.Application.Schedule.Exceptions;
 using StageFlow.Domain.Festival;
 using StageFlow.Infrastructure.Persistence;
 using StageFlow.Infrastructure.Schedule;
+using StageFlow.IntegrationTests.Infrastructure;
 using Testcontainers.PostgreSql;
 
 namespace StageFlow.IntegrationTests;
@@ -41,9 +42,12 @@ public class CreatePerformanceServiceTests : IAsyncLifetime
     [Fact]
     public async Task Service_creates_performance_if_no_conflict()
     {
+        var organizerId = await TestData.CreateUserAsync(_dbContext);
+
         var festival = new Festival
         {
             Id = Guid.NewGuid(),
+            OrganizerId = organizerId,
             Name = "Test Festival",
             Location = "Tallinn",
             StartDate = DateTime.UtcNow,
@@ -89,9 +93,12 @@ public class CreatePerformanceServiceTests : IAsyncLifetime
     [Fact]
     public async Task Service_throws_when_schedule_conflicts()
     {
+        var organizerId = await TestData.CreateUserAsync(_dbContext);
+
         var festival = new Festival
         {
             Id = Guid.NewGuid(),
+            OrganizerId = organizerId,
             Name = "Test Festival",
             Location = "Tallinn",
             StartDate = DateTime.UtcNow,

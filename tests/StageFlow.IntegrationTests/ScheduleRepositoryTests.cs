@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using StageFlow.Domain.Festival;
 using StageFlow.Infrastructure.Persistence;
 using StageFlow.Infrastructure.Schedule;
+using StageFlow.IntegrationTests.Infrastructure;
 using Testcontainers.PostgreSql;
 
 namespace StageFlow.IntegrationTests;
@@ -39,9 +40,12 @@ public class ScheduleRepositoryTests : IAsyncLifetime
     [Fact]
     public async Task Should_detect_schedule_conflict()
     {
+        var organizerId = await TestData.CreateUserAsync(_dbContext);
+
         var festival = new Festival
         {
             Id = Guid.NewGuid(),
+            OrganizerId = organizerId,
             Name = "Test Festival",
             Location = "Tallinn",
             StartDate = DateTime.UtcNow,
@@ -80,9 +84,12 @@ public class ScheduleRepositoryTests : IAsyncLifetime
     [Fact]
     public async Task Should_return_false_without_conflict()
     {
+        var organizerId = await TestData.CreateUserAsync(_dbContext);
+
         var festival = new Festival
         {
             Id = Guid.NewGuid(),
+            OrganizerId = organizerId,
             Name = "Test Festival",
             Location = "Tallinn",
             StartDate = DateTime.UtcNow,
@@ -121,9 +128,12 @@ public class ScheduleRepositoryTests : IAsyncLifetime
     [Fact]
     public async Task Should_detect_conflict_when_new_performance_ends_during_existing_one()
     {
+        var organizerId = await TestData.CreateUserAsync(_dbContext);
+
         var festival = new Festival
         {
             Id = Guid.NewGuid(),
+            OrganizerId = organizerId,
             Name = "Test Festival",
             Location = "Tallinn",
             StartDate = DateTime.UtcNow,

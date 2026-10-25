@@ -6,7 +6,9 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using StageFlow.Api;
 using StageFlow.Application.Auth;
+using StageFlow.Application.Festivals;
 using StageFlow.Application.Schedule;
+using StageFlow.Infrastructure.Festivals;
 using StageFlow.Infrastructure.Identity;
 using StageFlow.Infrastructure.Persistence;
 using StageFlow.Infrastructure.Schedule;
@@ -83,6 +85,8 @@ builder.Services.AddScoped<IUserAccountCreator, IdentityUserAccountCreator>();
 builder.Services.AddScoped<RegisterUserService>();
 builder.Services.AddScoped<IUserAuthenticator, IdentityUserAuthenticator>();
 builder.Services.AddScoped<LoginUserService>();
+builder.Services.AddScoped<IFestivalRepository, FestivalRepository>();
+builder.Services.AddScoped<CreateFestivalService>();
 
 builder.Services.AddSingleton<IJwtTokenService, JwtTokenService>();
 

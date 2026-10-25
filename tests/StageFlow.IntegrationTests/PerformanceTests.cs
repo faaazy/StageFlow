@@ -2,6 +2,7 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using StageFlow.Domain.Festival;
 using StageFlow.Infrastructure.Persistence;
+using StageFlow.IntegrationTests.Infrastructure;
 using Testcontainers.PostgreSql;
 
 namespace StageFlow.IntegrationTests;
@@ -38,9 +39,12 @@ public class PerformanceTests : IAsyncLifetime
     [Fact]
     public async Task Should_save_and_load_performance()
     {
+        var organizerId = await TestData.CreateUserAsync(_dbContext);
+
         var festival = new Festival
         {
             Id = Guid.NewGuid(),
+            OrganizerId = organizerId,
             Name = "Test Festival",
             Location = "Tallinn",
             StartDate = DateTime.UtcNow,
