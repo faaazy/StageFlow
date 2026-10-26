@@ -87,6 +87,7 @@ builder.Services.AddScoped<IUserAuthenticator, IdentityUserAuthenticator>();
 builder.Services.AddScoped<LoginUserService>();
 builder.Services.AddScoped<IFestivalRepository, FestivalRepository>();
 builder.Services.AddScoped<CreateFestivalService>();
+builder.Services.AddScoped<GetFestivalService>();
 
 builder.Services.AddSingleton<IJwtTokenService, JwtTokenService>();
 

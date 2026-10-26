@@ -60,6 +60,19 @@ public class FestivalsApiTests(StageFlowApiFactory factory)
         return request;
     }
 
+    private static HttpRequestMessage GetFestivalRequest(Guid id, string? token)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Get, $"/festivals/{id}");
+
+        if (token is not null)
+        {
+            request.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+        }
+
+        return request;
+    }
+
     [Fact]
     public async Task Create_WithoutToken_ReturnsUnauthorized()
     {
@@ -128,11 +141,52 @@ public class FestivalsApiTests(StageFlowApiFactory factory)
         {
             Content = new StringContent(json, System.Text.Encoding.UTF8, "application/json")
         };
-        
+
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         var response = await _client.SendAsync(request);
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task Get_WithoutToken_ReturnsUnauthorized()
+    {
+        var response = await _client.SendAsync(
+            GetFestivalRequest(Guid.NewGuid(), token: null));
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task Get_ExistingFestival_ReturnsOk()
+    {
+        var (_, token) = await RegisterAndLoginAsync();
+
+        var createResponse = await _client.SendAsync(
+            CreateFestivalRequest(ValidFestivalBody(), token));
+        var created = await createResponse.Content
+            .ReadFromJsonAsync<FestivalResponseDto>();
+
+        var response = await _client.SendAsync(
+            GetFestivalRequest(created!.Id, token));
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var festival = await response.Content
+            .ReadFromJsonAsync<FestivalResponseDto>();
+
+        festival!.Id.Should().Be(created.Id);
+    }
+
+    [Fact]
+    public async Task Get_UnknownFestival_ReturnsNotFound()
+    {
+        var (_, token) = await RegisterAndLoginAsync();
+
+        var response = await _client.SendAsync(
+            GetFestivalRequest(Guid.NewGuid(), token));
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 }

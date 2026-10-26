@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using StageFlow.Application.Festivals;
 using StageFlow.Domain.Festival;
 using StageFlow.Infrastructure.Persistence;
@@ -13,5 +14,10 @@ public class FestivalRepository(AppDbContext dbContext) : IFestivalRepository
         await dbContext.SaveChangesAsync();
 
         return festival;
+    }
+
+    public async Task<Festival?> GetByIdAsync(Guid id)
+    {
+        return await dbContext.Festivals.FirstOrDefaultAsync(f => f.Id == id);
     }
 }
