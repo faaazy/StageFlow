@@ -108,4 +108,31 @@ public class FestivalsApiTests(StageFlowApiFactory factory)
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
+
+    [Fact]
+    public async Task Create_WithDateWithoutTimezone_ReturnsBadRequest()
+    {
+        var (_, token) = await RegisterAndLoginAsync();
+
+        var json = """
+        {
+            "name": "Test Fest",
+            "location": "Moscow",
+            "startDate": "2026-11-01T10:00:00",
+            "endDate": "2026-11-03T10:00:00",
+            "timeZone": "Europe/Moscow"
+        }
+        """;
+
+        var request = new HttpRequestMessage(HttpMethod.Post, "/festivals")
+        {
+            Content = new StringContent(json, System.Text.Encoding.UTF8, "application/json")
+        };
+        
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var response = await _client.SendAsync(request);
+
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
 }
