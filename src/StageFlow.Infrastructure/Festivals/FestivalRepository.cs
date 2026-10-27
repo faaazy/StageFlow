@@ -20,4 +20,9 @@ public class FestivalRepository(AppDbContext dbContext) : IFestivalRepository
     {
         return await dbContext.Festivals.FirstOrDefaultAsync(f => f.Id == id);
     }
+
+    public async Task UpdateAsync(Festival festival)
+    {
+        await dbContext.SaveChangesAsync();
+    }
 }

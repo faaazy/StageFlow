@@ -12,7 +12,8 @@ namespace StageFlow.Api.Controllers;
 [Route("festivals")]
 public class FestivalsController(
     CreateFestivalService createFestivalService,
-    GetFestivalService getFestivalService) : ControllerBase
+    GetFestivalService getFestivalService,
+    UpdateFestivalService updateFestivalService) : ControllerBase
 {
     private static FestivalResponse ToResponse(Festival festival) => new()
     {
@@ -63,7 +64,42 @@ public class FestivalsController(
         var festival = await getFestivalService.GetByIdAsync(id);
 
         return festival is null ? NotFound() : Ok(ToResponse(festival));
+    }
 
+    [HttpPut("{id:guid}")]
+    public async Task<ActionResult<FestivalResponse>> Update(Guid id, UpdateFestivalRequest request)
+    {
+        var sub = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
 
+        if(!Guid.TryParse(sub, out var userId)) 
+            return Unauthorized();
+
+        try
+        {
+            var updatedFestival = await updateFestivalService.UpdateAsync(
+                id,
+                userId,
+                request.Name,
+                request.Description,
+                request.Location,
+                request.StartDate,
+                request.EndDate,
+                request.TimeZone
+            );
+
+            return Ok(ToResponse(updatedFestival));
+        }
+        catch (FestivalNotFoundException notFoundEx)
+        {
+            return NotFound(notFoundEx.Message);
+        }
+        catch (FestivalAccessDeniedException)
+        {
+            return Forbid();
+        }
+        catch (FestivalValidationException validationEx)
+        {
+            return BadRequest(validationEx.Message);
+        }
     }
 }

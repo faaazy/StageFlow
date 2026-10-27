@@ -18,6 +18,9 @@ public class CreateFestivalService(IFestivalRepository festivalRepository)
         if(string.IsNullOrWhiteSpace(name)) 
             throw new FestivalValidationException("Name is required"); 
 
+        if(string.IsNullOrWhiteSpace(location)) 
+            throw new FestivalValidationException("Location is required"); 
+
         if(startDate.Kind != DateTimeKind.Utc || endDate.Kind != DateTimeKind.Utc)
             throw new FestivalValidationException("Dates must be in UTC, e.g. 2026-11-01T10:00:00Z"); 
 

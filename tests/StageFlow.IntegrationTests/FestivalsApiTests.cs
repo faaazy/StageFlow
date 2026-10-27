@@ -15,7 +15,32 @@ public class FestivalsApiTests(StageFlowApiFactory factory)
 
     private record LoginResponse(string AccessToken);
 
-    private record FestivalResponseDto(Guid Id, Guid OrganizerId);
+    private record FestivalResponseDto(Guid Id, Guid OrganizerId, string Name);
+
+    private static HttpRequestMessage UpdateFestivalRequest(Guid id, object body, string? token)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Put, $"/festivals/{id}")
+        {
+            Content = JsonContent.Create(body)
+        };
+
+        if (token is not null)
+        {
+            request.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+        }
+
+        return request;
+    }
+
+    private static object UpdatedFestivalBody() => new
+    {
+        Name = "Renamed Fest",
+        Location = "Tallinn",
+        StartDate = DateTime.UtcNow.AddDays(40),
+        EndDate = DateTime.UtcNow.AddDays(42),
+        TimeZone = "Europe/Tallinn"
+    };
 
     private async Task<(Guid UserId, string Token)> RegisterAndLoginAsync()
     {
@@ -188,5 +213,66 @@ public class FestivalsApiTests(StageFlowApiFactory factory)
             GetFestivalRequest(Guid.NewGuid(), token));
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task Update_ByOrganizer_ChangesFestival()
+    {
+        var (_, token) = await RegisterAndLoginAsync();
+        var created = await (await _client.SendAsync(
+                CreateFestivalRequest(ValidFestivalBody(), token)))
+            .Content.ReadFromJsonAsync<FestivalResponseDto>();
+
+        var response = await _client.SendAsync(
+            UpdateFestivalRequest(created!.Id, UpdatedFestivalBody(), token));
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var reloaded = await (await _client.SendAsync(
+                GetFestivalRequest(created.Id, token)))
+            .Content.ReadFromJsonAsync<FestivalResponseDto>();
+
+        reloaded!.Name.Should().Be("Renamed Fest");
+    }
+
+    [Fact]
+    public async Task Update_ByAnotherUser_ReturnsForbiddenAndDoesNotChange()
+    {
+        var (_, ownerToken) = await RegisterAndLoginAsync();
+        var (_, strangerToken) = await RegisterAndLoginAsync();
+        var created = await (await _client.SendAsync(
+                CreateFestivalRequest(ValidFestivalBody(), ownerToken)))
+            .Content.ReadFromJsonAsync<FestivalResponseDto>();
+
+        var response = await _client.SendAsync(
+            UpdateFestivalRequest(created!.Id, UpdatedFestivalBody(), strangerToken));
+
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+
+        var reloaded = await (await _client.SendAsync(
+                GetFestivalRequest(created.Id, ownerToken)))
+            .Content.ReadFromJsonAsync<FestivalResponseDto>();
+
+        reloaded!.Name.Should().Be("Test Fest");
+    }
+
+    [Fact]
+    public async Task Update_UnknownFestival_ReturnsNotFound()
+    {
+        var (_, token) = await RegisterAndLoginAsync();
+
+        var response = await _client.SendAsync(
+            UpdateFestivalRequest(Guid.NewGuid(), UpdatedFestivalBody(), token));
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task Update_WithoutToken_ReturnsUnauthorized()
+    {
+        var response = await _client.SendAsync(
+            UpdateFestivalRequest(Guid.NewGuid(), UpdatedFestivalBody(), token: null));
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 }
