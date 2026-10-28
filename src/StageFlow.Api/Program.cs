@@ -8,10 +8,12 @@ using StageFlow.Api;
 using StageFlow.Application.Auth;
 using StageFlow.Application.Festivals;
 using StageFlow.Application.Schedule;
+using StageFlow.Application.Stages;
 using StageFlow.Infrastructure.Festivals;
 using StageFlow.Infrastructure.Identity;
 using StageFlow.Infrastructure.Persistence;
 using StageFlow.Infrastructure.Schedule;
+using StageFlow.Infrastructure.Stages;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -89,6 +91,8 @@ builder.Services.AddScoped<IFestivalRepository, FestivalRepository>();
 builder.Services.AddScoped<CreateFestivalService>();
 builder.Services.AddScoped<GetFestivalService>();
 builder.Services.AddScoped<UpdateFestivalService>();
+builder.Services.AddScoped<IStageRepository, StageRepository>();
+builder.Services.AddScoped<CreateStageService>();
 
 builder.Services.AddSingleton<IJwtTokenService, JwtTokenService>();
 

@@ -31,10 +31,7 @@ public class FestivalsController(
     [HttpPost]
     public async Task<ActionResult<FestivalResponse>> Create(CreateFestivalRequest request)
     {
-        var sub = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
-
-        if(!Guid.TryParse(sub, out var organizerId)) 
-            return Unauthorized();
+        if(!User.TryGetUserId(out var organizerId)) return Unauthorized();
 
         try
         {
@@ -69,10 +66,7 @@ public class FestivalsController(
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<FestivalResponse>> Update(Guid id, UpdateFestivalRequest request)
     {
-        var sub = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
-
-        if(!Guid.TryParse(sub, out var userId)) 
-            return Unauthorized();
+        if(!User.TryGetUserId(out var userId)) return Unauthorized();
 
         try
         {
