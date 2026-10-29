@@ -5,4 +5,6 @@ namespace StageFlow.Application.Stages;
 public interface IStageRepository
 {
     Task<Stage> AddAsync(Stage stage);
+
+    Task<Stage?> GetByIdAsync(Guid id);
 }

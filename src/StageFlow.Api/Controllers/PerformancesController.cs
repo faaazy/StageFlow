@@ -1,6 +1,9 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using StageFlow.Application.Festivals.Exceptions;
 using StageFlow.Application.Schedule;
 using StageFlow.Application.Schedule.Exceptions;
+using StageFlow.Application.Stages.Exceptions;
 
 namespace StageFlow.Api.Controllers;
 
@@ -31,12 +34,16 @@ public class PerformancesController(
         return Ok(response);
     }
 
+    [Authorize]
     [HttpPost]
     public async Task<ActionResult<PerformanceResponse>> Create(CreatePerformanceRequest performanceRequest)
     {
+        if(!User.TryGetUserId(out var userId)) return Unauthorized();
+
         try
         {
             var performance = await createService.CreateAsync(
+                userId,
                 performanceRequest.StageId,
                 performanceRequest.ArtistId,
                 performanceRequest.StartTime,
@@ -57,6 +64,18 @@ public class PerformancesController(
         catch (PerformanceScheduleConflictException)
         {
             return Conflict();
+        }
+        catch (StageNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (FestivalNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (FestivalAccessDeniedException)
+        {
+            return Forbid();
         }
     }
 }
