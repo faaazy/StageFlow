@@ -173,4 +173,31 @@ public class PerformancesApiTests(StageFlowApiFactory factory)
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
+    
+    [Fact]
+    public async Task Create_WithNonUtcOffset_ReturnsCreated()
+    {
+        var token = await RegisterAndLoginAsync();
+        var stageId = await CreateStageAsync(await CreateFestivalAsync(token), token);
+        var artistId = await CreateArtistAsync();
+
+        var json = $$"""
+        {
+            "stageId": "{{stageId}}",
+            "artistId": "{{artistId}}",
+            "startTime": "2030-06-01T15:00:00+03:00",
+            "endTime": "2030-06-01T16:00:00+03:00"
+        }
+        """;
+
+        var request = new HttpRequestMessage(HttpMethod.Post, "/schedule/performances")
+        {
+            Content = new StringContent(json, System.Text.Encoding.UTF8, "application/json")
+        };
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var response = await _client.SendAsync(request);
+
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+    }
 }

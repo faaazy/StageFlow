@@ -20,6 +20,9 @@ public class CreatePerformanceService(
         DateTimeOffset startTime, 
         DateTimeOffset endTime)
     {
+        startTime = startTime.ToUniversalTime();
+        endTime = endTime.ToUniversalTime();
+        
         var stage = await stageRepository.GetByIdAsync(stageId) ?? throw new StageNotFoundException();
         var festival = await festivalRepository.GetByIdAsync(stage.FestivalId) ?? throw new FestivalNotFoundException();
 
