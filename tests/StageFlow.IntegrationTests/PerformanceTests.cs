@@ -54,7 +54,7 @@ public class PerformanceTests : IAsyncLifetime
 
         var stage = new Stage("Main Stage", festival.Id);
 
-        var artist = new Artist("Michael Jackson");
+        var artist = new Artist("Michael Jackson", organizerId);
 
         var startTime = new DateTimeOffset(2026, 09, 27, 18, 0, 0, TimeSpan.Zero);
         var endTime = new DateTimeOffset(2026, 09, 27, 20, 0, 0, TimeSpan.Zero);

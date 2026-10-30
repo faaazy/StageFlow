@@ -55,7 +55,7 @@ public class ScheduleRepositoryTests : IAsyncLifetime
 
         var stage = new Stage("Main Stage", festival.Id);
 
-        var artist = new Artist("Michael Jackson");
+        var artist = new Artist("Michael Jackson", organizerId);
 
         var startTime = new DateTimeOffset(2026, 09, 30, 10, 0, 0, TimeSpan.Zero);
         var endTime = new DateTimeOffset(2026, 09, 30, 12, 0, 0, TimeSpan.Zero);
@@ -99,7 +99,7 @@ public class ScheduleRepositoryTests : IAsyncLifetime
 
         var stage = new Stage("Main Stage", festival.Id);
 
-        var artist = new Artist("Michael Jackson");
+        var artist = new Artist("Michael Jackson", organizerId);
 
         var startTime = new DateTimeOffset(2026, 09, 30, 10, 0, 0, TimeSpan.Zero);
         var endTime = new DateTimeOffset(2026, 09, 30, 12, 0, 0, TimeSpan.Zero);
@@ -143,7 +143,7 @@ public class ScheduleRepositoryTests : IAsyncLifetime
 
         var stage = new Stage("Main Stage", festival.Id);
 
-        var artist = new Artist("Michael Jackson");
+        var artist = new Artist("Michael Jackson", organizerId);
 
         var startTime = new DateTimeOffset(2026, 09, 30, 10, 0, 0, TimeSpan.Zero);
         var endTime = new DateTimeOffset(2026, 09, 30, 12, 0, 0, TimeSpan.Zero);

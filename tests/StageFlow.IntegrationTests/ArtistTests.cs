@@ -2,6 +2,7 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using StageFlow.Domain.Festival;
 using StageFlow.Infrastructure.Persistence;
+using StageFlow.IntegrationTests.Infrastructure;
 using Testcontainers.PostgreSql;
 
 namespace StageFlow.IntegrationTests;
@@ -38,7 +39,9 @@ public class ArtistTests : IAsyncLifetime
     [Fact]
     public async Task Should_save_and_load_artist()
     {
-        var artist = new Artist("Michael Jackson");
+        var organizerId = await TestData.CreateUserAsync(_dbContext);
+
+        var artist = new Artist("Michael Jackson", organizerId);
 
         _dbContext.Add(artist);
 
@@ -49,6 +52,7 @@ public class ArtistTests : IAsyncLifetime
         var savedArtist = await _dbContext.Artists
             .FirstAsync(a => a.Id == artist.Id);
         
+        savedArtist.OrganizerId.Should().Be(organizerId);
         savedArtist.Id.Should().Be(artist.Id);
         savedArtist.Name.Should().Be("Michael Jackson");        
     }

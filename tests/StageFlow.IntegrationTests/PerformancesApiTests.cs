@@ -75,7 +75,9 @@ public class PerformancesApiTests(StageFlowApiFactory factory)
         using var scope = factory.Services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-        var artist = new Artist("Test Artist");
+        var organizerId = await TestData.CreateUserAsync(dbContext);
+
+        var artist = new Artist("Test Artist", organizerId);
         dbContext.Artists.Add(artist);
         await dbContext.SaveChangesAsync();
 
