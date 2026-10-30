@@ -77,5 +77,9 @@ public class PerformancesController(
         {
             return Forbid();
         }
+        catch (PerformanceValidationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 }

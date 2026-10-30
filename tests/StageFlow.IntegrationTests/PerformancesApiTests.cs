@@ -200,4 +200,27 @@ public class PerformancesApiTests(StageFlowApiFactory factory)
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
+
+    [Fact]
+    public async Task Create_WithEndBeforeStart_ReturnsBadRequest()
+    {
+        var token = await RegisterAndLoginAsync();
+        var stageId = await CreateStageAsync(await CreateFestivalAsync(token), token);
+        var artistId = await CreateArtistAsync();
+
+        var day = DateTime.UtcNow.Date.AddDays(31);
+
+        var body = new
+        {
+            StageId = stageId,
+            ArtistId = artistId,
+            StartTime = new DateTimeOffset(day.AddHours(14), TimeSpan.Zero),
+            EndTime = new DateTimeOffset(day.AddHours(13), TimeSpan.Zero)
+        };
+
+        var response = await _client.SendAsync(Authorized(
+            HttpMethod.Post, "/schedule/performances", body, token));
+
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
 }

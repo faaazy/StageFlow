@@ -22,17 +22,26 @@ public class CreatePerformanceService(
     {
         startTime = startTime.ToUniversalTime();
         endTime = endTime.ToUniversalTime();
-        
+
         var stage = await stageRepository.GetByIdAsync(stageId) ?? throw new StageNotFoundException();
         var festival = await festivalRepository.GetByIdAsync(stage.FestivalId) ?? throw new FestivalNotFoundException();
 
         if(festival.OrganizerId != userId) throw new FestivalAccessDeniedException();
 
+        Performance performance;
+        
+        try
+        {
+            performance = new Performance(stageId, artistId, startTime, endTime);
+        }
+        catch (ArgumentException ex)
+        {
+            throw new PerformanceValidationException(ex.Message);
+        }
+
         var hasConflict = await scheduleRepository.HasScheduleConflict(stageId, startTime, endTime);
 
         if(hasConflict) throw new PerformanceScheduleConflictException();
-
-        var performance = new Performance(stageId, artistId, startTime, endTime);
 
         return await performanceRepository.AddAsync(performance);
     }
