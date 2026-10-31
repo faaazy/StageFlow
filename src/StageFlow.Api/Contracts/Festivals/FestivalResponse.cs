@@ -1,6 +1,6 @@
 using StageFlow.Domain.Festival;
 
-namespace StageFlow.Api;
+namespace StageFlow.Api.Contracts.Festivals;
 
 public class FestivalResponse
 {

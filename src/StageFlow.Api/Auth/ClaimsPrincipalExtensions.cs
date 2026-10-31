@@ -1,7 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
-namespace StageFlow.Api;
+namespace StageFlow.Api.Auth;
 
 public static class ClaimsPrincipalExtensions
 {

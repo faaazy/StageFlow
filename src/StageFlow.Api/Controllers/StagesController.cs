@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using StageFlow.Api.Auth;
+using StageFlow.Api.Contracts.Stages;
 using StageFlow.Application.Festivals.Exceptions;
 using StageFlow.Application.Stages;
 using StageFlow.Application.Stages.Exceptions;

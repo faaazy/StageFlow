@@ -1,6 +1,8 @@
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using StageFlow.Api.Auth;
+using StageFlow.Api.Contracts.Festivals;
 using StageFlow.Application.Festivals;
 using StageFlow.Application.Festivals.Exceptions;
 using StageFlow.Domain.Festival;

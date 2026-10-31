@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using StageFlow.Api.Contracts.Auth;
 using StageFlow.Application.Auth;
 
 namespace StageFlow.Api.Controllers;

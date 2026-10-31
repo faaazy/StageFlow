@@ -1,4 +1,4 @@
-namespace StageFlow.Api;
+namespace StageFlow.Api.Auth;
 
 public sealed class JwtOptions
 {

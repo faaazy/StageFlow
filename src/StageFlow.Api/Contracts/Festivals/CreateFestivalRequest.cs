@@ -1,4 +1,4 @@
-namespace StageFlow.Api;
+namespace StageFlow.Api.Contracts.Festivals;
 
 public class CreateFestivalRequest
 {

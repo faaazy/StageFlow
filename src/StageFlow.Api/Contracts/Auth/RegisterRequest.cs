@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace StageFlow.Api;
+namespace StageFlow.Api.Contracts.Auth;
 
-public class LoginRequest
+public class RegisterRequest
 {
     [Required]
     [EmailAddress]

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using StageFlow.Api;
+using StageFlow.Api.Auth;
 using StageFlow.Application.Artists;
 using StageFlow.Application.Auth;
 using StageFlow.Application.Festivals;

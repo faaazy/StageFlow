@@ -4,7 +4,7 @@ using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using StageFlow.Application.Auth;
 
-namespace StageFlow.Api;
+namespace StageFlow.Api.Auth;
 
 public class JwtTokenService(IOptions<JwtOptions> options) : IJwtTokenService
 {
