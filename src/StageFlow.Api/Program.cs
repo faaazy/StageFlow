@@ -5,10 +5,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using StageFlow.Api;
+using StageFlow.Application.Artists;
 using StageFlow.Application.Auth;
 using StageFlow.Application.Festivals;
 using StageFlow.Application.Schedule;
 using StageFlow.Application.Stages;
+using StageFlow.Infrastructure.Artists;
 using StageFlow.Infrastructure.Festivals;
 using StageFlow.Infrastructure.Identity;
 using StageFlow.Infrastructure.Persistence;
@@ -83,16 +85,22 @@ builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
 builder.Services.AddScoped<IPerformanceRepository, PerformanceRepository>();
 builder.Services.AddScoped<CreatePerformanceService>();
 builder.Services.AddScoped<GetPerformancesService>();
+
 builder.Services.AddScoped<IUserAccountCreator, IdentityUserAccountCreator>();
 builder.Services.AddScoped<RegisterUserService>();
 builder.Services.AddScoped<IUserAuthenticator, IdentityUserAuthenticator>();
 builder.Services.AddScoped<LoginUserService>();
+
 builder.Services.AddScoped<IFestivalRepository, FestivalRepository>();
 builder.Services.AddScoped<CreateFestivalService>();
 builder.Services.AddScoped<GetFestivalService>();
 builder.Services.AddScoped<UpdateFestivalService>();
+
 builder.Services.AddScoped<IStageRepository, StageRepository>();
 builder.Services.AddScoped<CreateStageService>();
+
+builder.Services.AddScoped<IArtistRepository, ArtistRepository>();
+builder.Services.AddScoped<CreateArtistService>();
 
 builder.Services.AddSingleton<IJwtTokenService, JwtTokenService>();
 
