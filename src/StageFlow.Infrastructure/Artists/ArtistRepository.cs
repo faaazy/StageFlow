@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using StageFlow.Application.Artists;
 using StageFlow.Domain.Festival;
 using StageFlow.Infrastructure.Persistence;
@@ -13,5 +14,10 @@ public class ArtistRepository(AppDbContext dbContext) : IArtistRepository
         await dbContext.SaveChangesAsync();
 
         return artist;
+    }
+
+    public async Task<Artist?> GetByIdAsync(Guid id)
+    {
+        return await dbContext.Artists.FirstOrDefaultAsync(a => a.Id == id);
     }
 }

@@ -1,3 +1,5 @@
+using StageFlow.Application.Artists;
+using StageFlow.Application.Artists.Exceptions;
 using StageFlow.Application.Festivals;
 using StageFlow.Application.Festivals.Exceptions;
 using StageFlow.Application.Schedule.Exceptions;
@@ -11,7 +13,8 @@ public class CreatePerformanceService(
     IScheduleRepository scheduleRepository,
     IPerformanceRepository performanceRepository,
     IStageRepository stageRepository,
-    IFestivalRepository festivalRepository)
+    IFestivalRepository festivalRepository,
+    IArtistRepository artistRepository)
 {
     public async Task<Performance> CreateAsync(
         Guid userId,
@@ -27,6 +30,10 @@ public class CreatePerformanceService(
         var festival = await festivalRepository.GetByIdAsync(stage.FestivalId) ?? throw new FestivalNotFoundException();
 
         if(festival.OrganizerId != userId) throw new FestivalAccessDeniedException();
+
+        var artist = await artistRepository.GetByIdAsync(artistId);
+
+        if (artist is null || artist.OrganizerId != userId) throw new ArtistNotFoundException();
 
         Performance performance;
         

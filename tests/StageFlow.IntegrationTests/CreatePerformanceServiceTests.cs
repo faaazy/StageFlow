@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using StageFlow.Application.Schedule;
 using StageFlow.Application.Schedule.Exceptions;
 using StageFlow.Domain.Festival;
+using StageFlow.Infrastructure.Artists;
 using StageFlow.Infrastructure.Festivals;
 using StageFlow.Infrastructure.Persistence;
 using StageFlow.Infrastructure.Schedule;
@@ -77,10 +78,13 @@ public class CreatePerformanceServiceTests : IAsyncLifetime
         var performanceRepo = new PerformanceRepository(_dbContext);
         var stageRepo = new StageRepository(_dbContext);
         var festivalRepo = new FestivalRepository(_dbContext);
+        var artistRepo = new ArtistRepository(_dbContext);
 
-        var performanceService = new CreatePerformanceService(scheduleRepo, performanceRepo, stageRepo, festivalRepo);
+        var performanceService = new CreatePerformanceService(
+                scheduleRepo, performanceRepo, stageRepo, festivalRepo, artistRepo);
 
-        var performance = await performanceService.CreateAsync(organizerId ,stage.Id, artist.Id, startTime, endTime);
+        var performance = await performanceService.CreateAsync(
+                organizerId ,stage.Id, artist.Id, startTime, endTime);
 
         performance.StageId.Should().Be(stage.Id);
         performance.ArtistId.Should().Be(artist.Id);
@@ -132,13 +136,14 @@ public class CreatePerformanceServiceTests : IAsyncLifetime
         
         _dbContext.ChangeTracker.Clear();
 
-
         var scheduleRepo = new ScheduleRepository(_dbContext);
         var performanceRepo = new PerformanceRepository(_dbContext);
         var stageRepo = new StageRepository(_dbContext);
         var festivalRepo = new FestivalRepository(_dbContext);
+        var artistRepo = new ArtistRepository(_dbContext);
 
-        var performanceService = new CreatePerformanceService(scheduleRepo, performanceRepo, stageRepo, festivalRepo);
+        var performanceService = new CreatePerformanceService(
+            scheduleRepo, performanceRepo, stageRepo, festivalRepo, artistRepo);
 
         var wrongStartTime = new DateTimeOffset(2026, 09, 30, 11, 0, 0, TimeSpan.Zero);
         var wrongEndTime = new DateTimeOffset(2026, 09, 30, 13, 0, 0, TimeSpan.Zero);

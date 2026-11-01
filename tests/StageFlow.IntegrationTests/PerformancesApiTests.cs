@@ -2,9 +2,6 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
-using StageFlow.Domain.Festival;
-using StageFlow.Infrastructure.Persistence;
 using StageFlow.IntegrationTests.Infrastructure;
 
 namespace StageFlow.IntegrationTests;
@@ -70,18 +67,13 @@ public class PerformancesApiTests(StageFlowApiFactory factory)
         return (await response.Content.ReadFromJsonAsync<IdResponse>())!.Id;
     }
 
-    private async Task<Guid> CreateArtistAsync()
+    private async Task<Guid> CreateArtistAsync(string token)
     {
-        using var scope = factory.Services.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var response = await _client.SendAsync(Authorized(
+            HttpMethod.Post, "/artists", new { Name = "Test Artist" }, token
+        ));
 
-        var organizerId = await TestData.CreateUserAsync(dbContext);
-
-        var artist = new Artist("Test Artist", organizerId);
-        dbContext.Artists.Add(artist);
-        await dbContext.SaveChangesAsync();
-
-        return artist.Id;
+        return (await response.Content.ReadFromJsonAsync<IdResponse>())!.Id;
     }
 
     private static object PerformanceBody(Guid stageId, Guid artistId, int startHour = 12)
@@ -113,7 +105,7 @@ public class PerformancesApiTests(StageFlowApiFactory factory)
     {
         var token = await RegisterAndLoginAsync();
         var stageId = await CreateStageAsync(await CreateFestivalAsync(token), token);
-        var artistId = await CreateArtistAsync();
+        var artistId = await CreateArtistAsync(token);
 
         var response = await _client.SendAsync(Authorized(
             HttpMethod.Post, "/schedule/performances",
@@ -128,7 +120,7 @@ public class PerformancesApiTests(StageFlowApiFactory factory)
         var ownerToken = await RegisterAndLoginAsync();
         var strangerToken = await RegisterAndLoginAsync();
         var stageId = await CreateStageAsync(await CreateFestivalAsync(ownerToken), ownerToken);
-        var artistId = await CreateArtistAsync();
+        var artistId = await CreateArtistAsync(ownerToken);
 
         var response = await _client.SendAsync(Authorized(
             HttpMethod.Post, "/schedule/performances",
@@ -141,7 +133,7 @@ public class PerformancesApiTests(StageFlowApiFactory factory)
     public async Task Create_OnUnknownStage_ReturnsNotFound()
     {
         var token = await RegisterAndLoginAsync();
-        var artistId = await CreateArtistAsync();
+        var artistId = await CreateArtistAsync(token);
 
         var response = await _client.SendAsync(Authorized(
             HttpMethod.Post, "/schedule/performances",
@@ -155,7 +147,7 @@ public class PerformancesApiTests(StageFlowApiFactory factory)
     {
         var token = await RegisterAndLoginAsync();
         var stageId = await CreateStageAsync(await CreateFestivalAsync(token), token);
-        var artistId = await CreateArtistAsync();
+        var artistId = await CreateArtistAsync(token);
 
         await _client.SendAsync(Authorized(
             HttpMethod.Post, "/schedule/performances",
@@ -181,7 +173,7 @@ public class PerformancesApiTests(StageFlowApiFactory factory)
     {
         var token = await RegisterAndLoginAsync();
         var stageId = await CreateStageAsync(await CreateFestivalAsync(token), token);
-        var artistId = await CreateArtistAsync();
+        var artistId = await CreateArtistAsync(token);
 
         var json = $$"""
         {
@@ -208,7 +200,7 @@ public class PerformancesApiTests(StageFlowApiFactory factory)
     {
         var token = await RegisterAndLoginAsync();
         var stageId = await CreateStageAsync(await CreateFestivalAsync(token), token);
-        var artistId = await CreateArtistAsync();
+        var artistId = await CreateArtistAsync(token);
 
         var day = DateTime.UtcNow.Date.AddDays(31);
 
@@ -224,5 +216,33 @@ public class PerformancesApiTests(StageFlowApiFactory factory)
             HttpMethod.Post, "/schedule/performances", body, token));
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task Create_WithUnknownArtist_ReturnsNotFound()
+    {
+        var token = await RegisterAndLoginAsync();
+        var stageId = await CreateStageAsync(await CreateFestivalAsync(token), token);
+
+        var response = await _client.SendAsync(Authorized(
+            HttpMethod.Post, "/schedule/performances",
+            PerformanceBody(stageId, Guid.NewGuid()), token));
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task Create_WithAnotherOrganizersArtist_ReturnsNotFound()
+    {
+        var ownerToken = await RegisterAndLoginAsync();
+        var otherToken = await RegisterAndLoginAsync();
+        var stageId = await CreateStageAsync(await CreateFestivalAsync(ownerToken), ownerToken);
+        var foreignArtistId = await CreateArtistAsync(otherToken);
+
+        var response = await _client.SendAsync(Authorized(
+            HttpMethod.Post, "/schedule/performances",
+            PerformanceBody(stageId, foreignArtistId), ownerToken));
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 }
