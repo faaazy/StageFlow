@@ -8,4 +8,9 @@ public class GetFestivalService(IFestivalRepository festivalRepository)
     {
         return await festivalRepository.GetByIdAsync(id);
     }
+
+    public async Task<List<Festival>> GetByOrganizerAsync(Guid organizerId)
+    {
+        return await festivalRepository.GetByOrganizerAsync(organizerId);
+    }
 }

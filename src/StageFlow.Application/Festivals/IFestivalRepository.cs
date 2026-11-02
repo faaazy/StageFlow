@@ -9,4 +9,6 @@ public interface IFestivalRepository
     Task<Festival?> GetByIdAsync(Guid id);
 
     Task UpdateAsync(Festival festival);
+
+    Task<List<Festival>> GetByOrganizerAsync(Guid organizerId);
 }

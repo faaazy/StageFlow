@@ -275,4 +275,54 @@ public class FestivalsApiTests(StageFlowApiFactory factory)
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
+
+    [Fact]
+    public async Task GetMine_WithoutToken_ReturnsUnauthorized()
+    {
+        var request = new HttpRequestMessage(HttpMethod.Get, "/festivals/mine");
+
+        var response = await _client.SendAsync(request);
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task GetMine_ForNewUser_ReturnsEmptyList()
+    {
+        var (_, token) = await RegisterAndLoginAsync();
+
+        var request = new HttpRequestMessage(HttpMethod.Get, "/festivals/mine");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var response = await _client.SendAsync(request);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var festivals = await response.Content
+            .ReadFromJsonAsync<List<FestivalResponseDto>>();
+
+        festivals.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task GetMine_ReturnsOnlyOwnFestivals()
+    {
+        var (userId, token) = await RegisterAndLoginAsync();
+        var (_, otherToken) = await RegisterAndLoginAsync();
+
+        await _client.SendAsync(CreateFestivalRequest(ValidFestivalBody(), token));
+        await _client.SendAsync(CreateFestivalRequest(ValidFestivalBody(), token));
+        await _client.SendAsync(CreateFestivalRequest(ValidFestivalBody(), otherToken));
+
+        var request = new HttpRequestMessage(HttpMethod.Get, "/festivals/mine");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var response = await _client.SendAsync(request);
+
+        var festivals = await response.Content
+            .ReadFromJsonAsync<List<FestivalResponseDto>>();
+
+        festivals.Should().HaveCount(2);
+        festivals.Should().OnlyContain(f => f.OrganizerId == userId);
+    }
 }

@@ -98,4 +98,14 @@ public class FestivalsController(
             return BadRequest(validationEx.Message);
         }
     }
+
+    [HttpGet("mine")]
+    public async Task<ActionResult<List<FestivalResponse>>> GetMine()
+    {
+        if(!User.TryGetUserId(out var userId)) return Unauthorized();
+
+        var festivals = await getFestivalService.GetByOrganizerAsync(userId);
+
+        return Ok(festivals.Select(ToResponse).ToList());
+    }
 }

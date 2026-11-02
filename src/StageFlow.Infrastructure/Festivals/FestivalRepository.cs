@@ -25,4 +25,13 @@ public class FestivalRepository(AppDbContext dbContext) : IFestivalRepository
     {
         await dbContext.SaveChangesAsync();
     }
+
+    public async Task<List<Festival>> GetByOrganizerAsync(Guid organizerId)
+    {
+        return await dbContext.Festivals
+            .Where(f => f.OrganizerId == organizerId)
+            .OrderBy(f => f.StartDate)
+            .AsNoTracking()
+            .ToListAsync();
+    }
 }
