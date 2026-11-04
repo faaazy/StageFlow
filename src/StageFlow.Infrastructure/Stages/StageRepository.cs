@@ -20,4 +20,13 @@ public class StageRepository(AppDbContext dbContext) : IStageRepository
     {
         return await dbContext.Stages.FirstOrDefaultAsync(s => s.Id == id);
     }
+
+    public async Task<List<Stage>> GetByFestivalAsync(Guid festivalId)
+    {
+        return await dbContext.Stages
+            .Where(s => s.FestivalId == festivalId)
+            .OrderBy(s => s.Name)
+            .AsNoTracking()
+            .ToListAsync();
+    }
 }

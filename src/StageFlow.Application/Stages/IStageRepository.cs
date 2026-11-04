@@ -7,4 +7,6 @@ public interface IStageRepository
     Task<Stage> AddAsync(Stage stage);
 
     Task<Stage?> GetByIdAsync(Guid id);
+
+    Task<List<Stage>> GetByFestivalAsync(Guid festivalId);
 }

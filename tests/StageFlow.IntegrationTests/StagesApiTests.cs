@@ -74,6 +74,20 @@ public class StagesApiTests(StageFlowApiFactory factory)
         return request;
     }
 
+    private static HttpRequestMessage GetStagesRequest(Guid festivalId, string? token)
+    {
+        var request = new HttpRequestMessage(
+            HttpMethod.Get, $"/festivals/{festivalId}/stages");
+
+        if (token is not null)
+        {
+            request.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+        }
+
+        return request;
+    }
+
     [Fact]
     public async Task Create_WithoutToken_ReturnsUnauthorized()
     {
@@ -136,5 +150,74 @@ public class StagesApiTests(StageFlowApiFactory factory)
             CreateStageRequest(festivalId, "   ", token));
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task GetByFestival_WithoutToken_ReturnsUnauthorized()
+    {
+        var response = await _client.SendAsync(
+            GetStagesRequest(Guid.NewGuid(), token: null));
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task GetByFestival_UnknownFestival_ReturnsNotFound()
+    {
+        var token = await RegisterAndLoginAsync();
+
+        var response = await _client.SendAsync(
+            GetStagesRequest(Guid.NewGuid(), token));
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task GetByFestival_WithoutStages_ReturnsEmptyList()
+    {
+        var token = await RegisterAndLoginAsync();
+        var festivalId = await CreateFestivalAsync(token);
+
+        var response = await _client.SendAsync(GetStagesRequest(festivalId, token));
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var stages = await response.Content
+            .ReadFromJsonAsync<List<StageResponseDto>>();
+
+        stages.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task GetByFestival_ReturnsOnlyStagesOfThatFestival()
+    {
+        var token = await RegisterAndLoginAsync();
+        var festivalId = await CreateFestivalAsync(token);
+        var otherFestivalId = await CreateFestivalAsync(token);
+
+        await _client.SendAsync(CreateStageRequest(festivalId, "Main Stage", token));
+        await _client.SendAsync(CreateStageRequest(festivalId, "Second Stage", token));
+        await _client.SendAsync(CreateStageRequest(otherFestivalId, "Other Stage", token));
+
+        var response = await _client.SendAsync(GetStagesRequest(festivalId, token));
+
+        var stages = await response.Content
+            .ReadFromJsonAsync<List<StageResponseDto>>();
+
+        stages.Should().HaveCount(2);
+        stages.Should().OnlyContain(s => s.FestivalId == festivalId);
+    }
+
+    [Fact]
+    public async Task GetByFestival_ByAnotherUser_ReturnsOk()
+    {
+        var ownerToken = await RegisterAndLoginAsync();
+        var strangerToken = await RegisterAndLoginAsync();
+        var festivalId = await CreateFestivalAsync(ownerToken);
+
+        var response = await _client.SendAsync(
+            GetStagesRequest(festivalId, strangerToken));
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 }

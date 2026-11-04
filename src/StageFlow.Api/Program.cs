@@ -98,6 +98,7 @@ builder.Services.AddScoped<UpdateFestivalService>();
 
 builder.Services.AddScoped<IStageRepository, StageRepository>();
 builder.Services.AddScoped<CreateStageService>();
+builder.Services.AddScoped<GetStagesService>();
 
 builder.Services.AddScoped<IArtistRepository, ArtistRepository>();
 builder.Services.AddScoped<CreateArtistService>();

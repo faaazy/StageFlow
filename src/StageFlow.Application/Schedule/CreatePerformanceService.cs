@@ -33,7 +33,8 @@ public class CreatePerformanceService(
 
         var artist = await artistRepository.GetByIdAsync(artistId);
 
-        if (artist is null || artist.OrganizerId != userId) throw new ArtistNotFoundException();
+        if (artist is null || artist.OrganizerId != userId) 
+            throw new ArtistNotFoundException();
 
         Performance performance;
         
