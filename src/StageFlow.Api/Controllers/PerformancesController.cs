@@ -7,6 +7,7 @@ using StageFlow.Application.Festivals.Exceptions;
 using StageFlow.Application.Schedule;
 using StageFlow.Application.Schedule.Exceptions;
 using StageFlow.Application.Stages.Exceptions;
+using StageFlow.Domain.Festival;
 
 namespace StageFlow.Api.Controllers;
 
@@ -18,13 +19,8 @@ public class PerformancesController(
 {
     private readonly string _apiRoute = "/schedule/performances";
 
-    [HttpGet]
-    public async Task<ActionResult<List<SchedulePerformanceResponse>>> GetAll()
+    private static SchedulePerformanceResponse ToScheduleResponse(Performance p) => new()
     {
-        var performances = await getPerformancesService.GetAllAsync();
-
-        var response = performances.Select(p => new SchedulePerformanceResponse
-        {
             Id = p.Id,
             ArtistId = p.ArtistId,
             ArtistName = p.Artist.Name,
@@ -32,7 +28,14 @@ public class PerformancesController(
             StageName = p.Stage.Name,
             StartTime = p.StartTime,
             EndTime = p.EndTime
-        }).ToList();
+    };
+
+    [HttpGet]
+    public async Task<ActionResult<List<SchedulePerformanceResponse>>> GetAll()
+    {
+        var performances = await getPerformancesService.GetAllAsync();
+
+        var response = performances.Select(ToScheduleResponse).ToList();
 
         return Ok(response);
     }
@@ -85,6 +88,22 @@ public class PerformancesController(
             return BadRequest(ex.Message);
         }
         catch (ArtistNotFoundException)
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpGet("/festivals/{festivalId:guid}/performances")]
+    [Authorize]
+    public async Task<ActionResult<List<SchedulePerformanceResponse>>> GetByFestival(Guid festivalId)
+    {
+        try
+        {
+            var performances = await getPerformancesService.GetByFestivalAsync(festivalId);
+
+            return Ok(performances.Select(ToScheduleResponse).ToList());
+        }
+        catch (FestivalNotFoundException)
         {
             return NotFound();
         }

@@ -8,4 +8,6 @@ public interface IPerformanceRepository
     Task<Performance> AddAsync(Performance performance);
 
     Task<List<Performance>> GetAllAsync();
+
+    Task<List<Performance>> GetByFestivalAsync(Guid festivalId);
 }

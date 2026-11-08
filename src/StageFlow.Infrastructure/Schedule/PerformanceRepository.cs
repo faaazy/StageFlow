@@ -24,4 +24,15 @@ public class PerformanceRepository(AppDbContext dbContext) : IPerformanceReposit
             .AsNoTracking()
             .ToListAsync();
     }
+
+    public async Task<List<Performance>> GetByFestivalAsync(Guid festivalId)
+    {
+        return await dbContext.Performances
+            .Include(p => p.Artist)
+            .Include(p => p.Stage)
+            .Where(p => p.Stage.FestivalId == festivalId)
+            .OrderBy(p => p.StartTime)
+            .AsNoTracking()
+            .ToListAsync();
+    }
 }

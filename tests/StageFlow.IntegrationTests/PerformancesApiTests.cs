@@ -15,6 +15,8 @@ public class PerformancesApiTests(StageFlowApiFactory factory)
 
     private record IdResponse(Guid Id);
 
+    private record ScheduleItemDto(Guid Id, Guid StageId, DateTimeOffset StartTime);
+
     private async Task<string> RegisterAndLoginAsync()
     {
         var email = $"test-{Guid.NewGuid():N}@example.com";
@@ -244,5 +246,68 @@ public class PerformancesApiTests(StageFlowApiFactory factory)
             PerformanceBody(stageId, foreignArtistId), ownerToken));
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task GetByFestival_WithoutToken_ReturnsUnauthorized()
+    {
+        var response = await _client.SendAsync(Authorized(
+            HttpMethod.Get, $"/festivals/{Guid.NewGuid()}/performances", null, token: null));
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task GetByFestival_UnknownFestival_ReturnsNotFound()
+    {
+        var token = await RegisterAndLoginAsync();
+
+        var response = await _client.SendAsync(Authorized(
+            HttpMethod.Get, $"/festivals/{Guid.NewGuid()}/performances", null, token));
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task GetByFestival_WithoutPerformances_ReturnsEmptyList()
+    {
+        var token = await RegisterAndLoginAsync();
+        var festivalId = await CreateFestivalAsync(token);
+
+        var response = await _client.SendAsync(Authorized(
+            HttpMethod.Get, $"/festivals/{festivalId}/performances", null, token));
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var items = await response.Content.ReadFromJsonAsync<List<ScheduleItemDto>>();
+
+        items.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task GetByFestival_ReturnsOnlyThatFestivalsPerformancesSortedByStart()
+    {
+        var token = await RegisterAndLoginAsync();
+        var festivalId = await CreateFestivalAsync(token);
+        var otherFestivalId = await CreateFestivalAsync(token);
+        var stageId = await CreateStageAsync(festivalId, token);
+        var otherStageId = await CreateStageAsync(otherFestivalId, token);
+        var artistId = await CreateArtistAsync(token);
+
+        await _client.SendAsync(Authorized(HttpMethod.Post, "/schedule/performances",
+            PerformanceBody(stageId, artistId, startHour: 15), token));
+        await _client.SendAsync(Authorized(HttpMethod.Post, "/schedule/performances",
+            PerformanceBody(stageId, artistId, startHour: 12), token));
+        await _client.SendAsync(Authorized(HttpMethod.Post, "/schedule/performances",
+            PerformanceBody(otherStageId, artistId), token));
+
+        var response = await _client.SendAsync(Authorized(
+            HttpMethod.Get, $"/festivals/{festivalId}/performances", null, token));
+
+        var items = await response.Content.ReadFromJsonAsync<List<ScheduleItemDto>>();
+
+        items.Should().HaveCount(2);
+        items.Should().OnlyContain(i => i.StageId == stageId);
+        items!.Select(i => i.StartTime).Should().BeInAscendingOrder();
     }
 }
