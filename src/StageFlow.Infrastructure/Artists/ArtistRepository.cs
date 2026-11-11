@@ -20,4 +20,13 @@ public class ArtistRepository(AppDbContext dbContext) : IArtistRepository
     {
         return await dbContext.Artists.FirstOrDefaultAsync(a => a.Id == id);
     }
+
+    public async Task<List<Artist>> GetByOrganizerAsync(Guid organizerId)
+    {
+        return await dbContext.Artists
+            .Where(a => a.OrganizerId == organizerId)
+            .OrderBy(a => a.Name)
+            .AsNoTracking()
+            .ToListAsync();
+    }
 }

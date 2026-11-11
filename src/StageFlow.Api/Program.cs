@@ -102,6 +102,7 @@ builder.Services.AddScoped<GetStagesService>();
 
 builder.Services.AddScoped<IArtistRepository, ArtistRepository>();
 builder.Services.AddScoped<CreateArtistService>();
+builder.Services.AddScoped<GetArtistsService>();
 
 builder.Services.AddSingleton<IJwtTokenService, JwtTokenService>();
 
