@@ -15,7 +15,23 @@ public class FestivalsApiTests(StageFlowApiFactory factory)
 
     private record LoginResponse(string AccessToken);
 
-    private record FestivalResponseDto(Guid Id, Guid OrganizerId, string Name);
+    private record FestivalResponseDto(Guid Id, Guid OrganizerId, string Name, string Status);
+
+    private static HttpRequestMessage ChangeStatusRequest(Guid id, object body, string? token)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Post, $"/festivals/{id}/status")
+        {
+            Content = JsonContent.Create(body)
+        };
+
+        if (token is not null)
+        {
+            request.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+        }
+
+        return request;
+    }
 
     private static HttpRequestMessage UpdateFestivalRequest(Guid id, object body, string? token)
     {
@@ -324,5 +340,113 @@ public class FestivalsApiTests(StageFlowApiFactory factory)
 
         festivals.Should().HaveCount(2);
         festivals.Should().OnlyContain(f => f.OrganizerId == userId);
+    }
+
+    [Fact]
+    public async Task Create_ReturnsDraftStatusAsString()
+    {
+        var (_, token) = await RegisterAndLoginAsync();
+
+        var response = await _client.SendAsync(
+            CreateFestivalRequest(ValidFestivalBody(), token));
+
+        var festival = await response.Content.ReadFromJsonAsync<FestivalResponseDto>();
+
+        festival!.Status.Should().Be("Draft");
+    }
+
+    [Fact]
+    public async Task ChangeStatus_WithoutToken_ReturnsUnauthorized()
+    {
+        var response = await _client.SendAsync(ChangeStatusRequest(
+            Guid.NewGuid(), new { Status = "Published" }, token: null));
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task ChangeStatus_ValidTransition_ChangesStatus()
+    {
+        var (_, token) = await RegisterAndLoginAsync();
+        var created = await (await _client.SendAsync(
+                CreateFestivalRequest(ValidFestivalBody(), token)))
+            .Content.ReadFromJsonAsync<FestivalResponseDto>();
+
+        var response = await _client.SendAsync(ChangeStatusRequest(
+            created!.Id, new { Status = "Published" }, token));
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var reloaded = await (await _client.SendAsync(
+                GetFestivalRequest(created.Id, token)))
+            .Content.ReadFromJsonAsync<FestivalResponseDto>();
+
+        reloaded!.Status.Should().Be("Published");
+    }
+
+    [Fact]
+    public async Task ChangeStatus_InvalidTransition_ReturnsBadRequestAndDoesNotChange()
+    {
+        var (_, token) = await RegisterAndLoginAsync();
+        var created = await (await _client.SendAsync(
+                CreateFestivalRequest(ValidFestivalBody(), token)))
+            .Content.ReadFromJsonAsync<FestivalResponseDto>();
+
+        var response = await _client.SendAsync(ChangeStatusRequest(
+            created!.Id, new { Status = "Live" }, token));
+
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+        var reloaded = await (await _client.SendAsync(
+                GetFestivalRequest(created.Id, token)))
+            .Content.ReadFromJsonAsync<FestivalResponseDto>();
+
+        reloaded!.Status.Should().Be("Draft");
+    }
+
+    [Fact]
+    public async Task ChangeStatus_ByAnotherUser_ReturnsForbiddenAndDoesNotChange()
+    {
+        var (_, ownerToken) = await RegisterAndLoginAsync();
+        var (_, strangerToken) = await RegisterAndLoginAsync();
+        var created = await (await _client.SendAsync(
+                CreateFestivalRequest(ValidFestivalBody(), ownerToken)))
+            .Content.ReadFromJsonAsync<FestivalResponseDto>();
+
+        var response = await _client.SendAsync(ChangeStatusRequest(
+            created!.Id, new { Status = "Published" }, strangerToken));
+
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+
+        var reloaded = await (await _client.SendAsync(
+                GetFestivalRequest(created.Id, ownerToken)))
+            .Content.ReadFromJsonAsync<FestivalResponseDto>();
+
+        reloaded!.Status.Should().Be("Draft");
+    }
+
+    [Fact]
+    public async Task ChangeStatus_UnknownFestival_ReturnsNotFound()
+    {
+        var (_, token) = await RegisterAndLoginAsync();
+
+        var response = await _client.SendAsync(ChangeStatusRequest(
+            Guid.NewGuid(), new { Status = "Published" }, token));
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task ChangeStatus_WithUnknownStatusValue_ReturnsBadRequest()
+    {
+        var (_, token) = await RegisterAndLoginAsync();
+        var created = await (await _client.SendAsync(
+                CreateFestivalRequest(ValidFestivalBody(), token)))
+            .Content.ReadFromJsonAsync<FestivalResponseDto>();
+
+        var response = await _client.SendAsync(ChangeStatusRequest(
+            created!.Id, new { Status = "Nonsense" }, token));
+
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 }

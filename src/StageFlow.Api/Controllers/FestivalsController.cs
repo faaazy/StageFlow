@@ -1,4 +1,3 @@
-using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StageFlow.Api.Auth;
@@ -15,7 +14,8 @@ namespace StageFlow.Api.Controllers;
 public class FestivalsController(
     CreateFestivalService createFestivalService,
     GetFestivalService getFestivalService,
-    UpdateFestivalService updateFestivalService) : ControllerBase
+    UpdateFestivalService updateFestivalService,
+    ChangeFestivalStatusService changeStatusService) : ControllerBase
 {
     private static FestivalResponse ToResponse(Festival festival) => new()
     {
@@ -107,5 +107,30 @@ public class FestivalsController(
         var festivals = await getFestivalService.GetByOrganizerAsync(userId);
 
         return Ok(festivals.Select(ToResponse).ToList());
+    }
+
+    [HttpPost("{id:guid}/status")]
+    public async Task<ActionResult<FestivalResponse>> ChangeStatus(Guid id, ChangeFestivalStatusRequest request)
+    {
+        if(!User.TryGetUserId(out var userId)) return Unauthorized();
+
+        try
+        {
+            var festival = await changeStatusService.ChangeStatusAsync(id, userId, request.Status);
+
+            return Ok(ToResponse(festival));
+        }
+        catch (FestivalNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (FestivalAccessDeniedException)
+        {
+            return Forbid();
+        }
+        catch (FestivalStatusTransitionException ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 }

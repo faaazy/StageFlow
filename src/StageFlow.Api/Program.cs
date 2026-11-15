@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -65,7 +66,9 @@ builder.Services
     });
 
 builder.Services.AddOpenApi();
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(
+            new JsonStringEnumConverter()));
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
@@ -95,6 +98,7 @@ builder.Services.AddScoped<IFestivalRepository, FestivalRepository>();
 builder.Services.AddScoped<CreateFestivalService>();
 builder.Services.AddScoped<GetFestivalService>();
 builder.Services.AddScoped<UpdateFestivalService>();
+builder.Services.AddScoped<ChangeFestivalStatusService>();
 
 builder.Services.AddScoped<IStageRepository, StageRepository>();
 builder.Services.AddScoped<CreateStageService>();
