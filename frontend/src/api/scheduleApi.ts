@@ -1,3 +1,5 @@
+import { apiFetch } from "./apiClient";
+
 // GET type
 export type SchedulePerformance = {
   id: string;
@@ -11,7 +13,7 @@ export type SchedulePerformance = {
 
 // GET request
 export async function getPerformances(): Promise<SchedulePerformance[]> {
-  const res = await fetch("http://localhost:5178/schedule/performances");
+  const res = await apiFetch("/schedule/performances");
 
   if (!res.ok) {
     throw new Error("we couldnt get all the performances for you(");
@@ -41,7 +43,7 @@ export type PerformanceResponse = {
 export async function createPerformance(
   request: CreatePerformanceRequest,
 ): Promise<PerformanceResponse> {
-  const res = await fetch("http://localhost:5178/schedule/performances", {
+  const res = await apiFetch("/schedule/performances", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(request),

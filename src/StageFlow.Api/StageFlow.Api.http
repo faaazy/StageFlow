@@ -4,30 +4,6 @@
 
 GET {{StageFlowHostAddress}}/schedule/performances
 
-### PERFORMANCE POST REQUEST
-
-POST {{StageFlowHostAddress}}/schedule/performances
-Content-Type: application/json
-
-{
-    "stageId": "fd57fd8b-4931-4054-a043-8ae877552b61",
-    "artistId": "2173eb99-929f-4b12-85ae-1b4433f12ebc",
-    "startTime": "2026-09-30T10:00:00Z",
-    "endTime": "2026-09-30T12:00:00Z"
-}
-
-### FAILED PERFORMANCE POST REQUEST
-
-POST {{StageFlowHostAddress}}/schedule/performances
-Content-Type: application/json
-
-{
-    "stageId": "fd57fd8b-4931-4054-a043-8ae877552b61",
-    "artistId": "2173eb99-929f-4b12-85ae-1b4433f12ebc",
-    "startTime": "2026-09-30T11:00:00Z",
-    "endTime": "2026-09-30T13:00:00Z"
-}
-
 ### AUTH REGISTER
 
 POST {{StageFlowHostAddress}}/auth/register
@@ -46,4 +22,92 @@ Content-Type: application/json
 {
     "email": "weak.password@example.com",
     "password": "abc"
+}
+
+### AUTH LOGIN
+
+# @name login
+POST {{StageFlowHostAddress}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "stageflow.test@example.com",
+  "password": "StrongPass123!"
+}
+
+@token = {{login.response.body.accessToken}}
+
+### CREATE FESTIVAL
+
+# @name festival
+POST {{StageFlowHostAddress}}/festivals
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Test Festival",
+  "description": "Festival for development",
+  "location": "Tallinn",
+  "startDate": "2027-06-15T10:00:00Z",
+  "endDate": "2027-06-17T22:00:00Z",
+  "timeZone": "Europe/Tallinn"
+}
+
+###
+
+@festivalId = {{festival.response.body.id}}
+
+### CREATE STAGE
+
+# @name stage
+POST {{StageFlowHostAddress}}/festivals/{{festivalId}}/stages
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Main Stage"
+}
+
+###
+
+@stageId = {{stage.response.body.id}}
+
+### CREATE ARTIST
+
+# @name artist
+POST {{StageFlowHostAddress}}/artists
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Test Artist"
+}
+
+###
+
+@artistId = {{artist.response.body.id}}
+
+### CREATE PERFORMANCE
+
+POST {{StageFlowHostAddress}}/schedule/performances
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "stageId": "{{stageId}}",
+  "artistId": "{{artistId}}",
+  "startTime": "2027-06-15T18:00:00Z",
+  "endTime": "2027-06-15T20:00:00Z"
+}
+
+### FAILED PERFORMANCE POST REQUEST
+
+POST {{StageFlowHostAddress}}/schedule/performances
+Content-Type: application/json
+
+{
+  "stageId": "{{stageId}}",
+  "artistId": "{{artistId}}",
+  "startTime": "2027-06-15T19:00:00Z",
+  "endTime": "2027-06-15T21:00:00Z"
 }
