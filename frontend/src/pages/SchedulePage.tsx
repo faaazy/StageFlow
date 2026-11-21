@@ -29,13 +29,12 @@ function getDurationLabel(startTime: string, endTime: string): string | null {
   return minutes === 0 ? `${hours} h` : `${hours} h ${minutes} min`;
 }
 
-const labelClassName =
-  "block text-[13px] font-medium text-neutral-600 dark:text-neutral-400";
+const labelClassName = "mb-[6px] block text-[13px] text-muted";
 
 const inputClassName =
-  "block h-10 w-full rounded border border-neutral-300 bg-white px-3 text-[15px] text-neutral-900 transition-colors placeholder:text-neutral-400 focus:border-accent-600 focus:outline-none focus:ring-2 focus:ring-accent-600/20 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder:text-neutral-600 dark:focus:border-accent-400 dark:focus:ring-accent-400/30";
+  "block h-10 w-full rounded-[6px] border border-border bg-surface px-3 text-[15px] text-text transition-colors placeholder:text-muted focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none dark:bg-bg";
 
-const listColumnsClassName = "sm:grid-cols-[8.5rem_minmax(0,1fr)_10rem]";
+const listColumnsClassName = "sm:grid-cols-[170px_minmax(0,1fr)_auto]";
 
 function Spinner() {
   return (
@@ -56,32 +55,32 @@ function StatusAlert({
   children: React.ReactNode;
 }) {
   const toneClassName = {
-    error:
-      "border-neutral-300 bg-white text-neutral-700 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-200",
-    conflict:
-      "border-red-300 border-l-2 border-l-red-600 bg-red-50 text-red-900 dark:border-red-900/70 dark:border-l-red-500 dark:bg-red-950/40 dark:text-red-100",
-    pending:
-      "border-neutral-300 bg-white text-neutral-600 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300",
-    success:
-      "border-emerald-300 bg-emerald-50 text-emerald-900 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-100",
+    error: "border-l-conflict",
+    conflict: "border-l-conflict",
+    pending: "border-l-border",
+    success: "border-l-accent",
+  }[tone];
+  const titleClassName = {
+    error: "text-conflict",
+    conflict: "text-conflict",
+    pending: "text-muted",
+    success: "text-accent",
   }[tone];
 
   return (
     <div
       role="status"
       aria-live="polite"
-      className={`flex items-start gap-2.5 rounded border px-3 py-2.5 text-[13px] leading-relaxed ${toneClassName}`}
+      className={`flex items-start gap-2.5 rounded-[4px] border-l-2 bg-surface px-[14px] py-3 text-[15px] leading-relaxed ${toneClassName}`}
     >
       {tone === "pending" && (
-        <span className="mt-0.5">
+        <span className={`mt-0.5 ${titleClassName}`}>
           <Spinner />
         </span>
       )}
       <div className="min-w-0">
-        {title && (
-          <p className="font-semibold tracking-wide uppercase">{title}</p>
-        )}
-        <p className={title ? "mt-0.5 break-words" : "break-words"}>
+        {title && <p className={`font-semibold ${titleClassName}`}>{title}</p>}
+        <p className={title ? "mt-0.5 break-words text-text" : "break-words text-text"}>
           {children}
         </p>
       </div>
@@ -91,14 +90,12 @@ function StatusAlert({
 
 function RowSkeleton() {
   return (
-    <li className="px-5 py-3.5">
+    <li className="px-5 py-[14px]">
       <div className="animate-pulse">
-        <div
-          className={`grid gap-3 sm:items-center ${listColumnsClassName}`}
-        >
-          <div className="h-3.5 w-16 rounded bg-neutral-200 dark:bg-neutral-800" />
-          <div className="h-3.5 w-44 rounded bg-neutral-200 dark:bg-neutral-800" />
-          <div className="h-3.5 w-24 rounded bg-neutral-200 sm:justify-self-end dark:bg-neutral-800" />
+        <div className={`grid gap-3 sm:items-center ${listColumnsClassName}`}>
+          <div className="h-4 w-24 rounded bg-border" />
+          <div className="h-4 w-44 rounded bg-border" />
+          <div className="h-5 w-20 rounded bg-border sm:justify-self-end" />
         </div>
       </div>
     </li>
@@ -127,37 +124,32 @@ function PerformanceRow({ performance }: { performance: SchedulePerformance }) {
 
   return (
     <li
-      className={`grid gap-x-5 gap-y-2 px-5 py-3.5 transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-800/50 sm:items-center ${listColumnsClassName}`}
+      className={`grid gap-x-5 gap-y-2 px-5 py-[14px] transition-colors hover:bg-[color-mix(in_srgb,var(--text)_6%,var(--surface))] sm:items-center ${listColumnsClassName}`}
     >
-      <div className="order-2 flex items-baseline gap-2 sm:order-1 sm:block sm:border-l sm:border-neutral-200 sm:pl-3.5 dark:sm:border-neutral-800">
-        <span className="text-[15px] font-medium text-neutral-900 tabular-nums dark:text-neutral-50">
-          {formatTime(performance.startTime)}
-        </span>
-        <span className="text-[13px] text-neutral-400 sm:hidden dark:text-neutral-500">
-          –
-        </span>
-        <span className="text-[13px] text-neutral-500 tabular-nums sm:mt-0.5 sm:block dark:text-neutral-400">
-          {formatTime(performance.endTime)}
-        </span>
+      <div className="order-2 sm:order-1">
+        <p className="font-mono text-[18px] text-text tabular-nums">
+          <span>{formatTime(performance.startTime)}</span>
+          <span> – </span>
+          <span>{formatTime(performance.endTime)}</span>
+        </p>
         {duration && (
-          <span className="text-[13px] text-neutral-400 tabular-nums sm:mt-0.5 sm:block dark:text-neutral-500">
-            <span className="sm:hidden">· </span>
+          <p className="mt-0.5 font-mono text-[13px] text-muted tabular-nums">
             {duration}
-          </span>
+          </p>
         )}
       </div>
 
       <div className="order-1 min-w-0 sm:order-2">
-        <p className="truncate text-[15px] font-medium text-neutral-900 dark:text-neutral-50">
+        <p className="truncate text-[16px] font-semibold text-text">
           {performance.artistName}
         </p>
-        <p className="mt-0.5 truncate font-mono text-xs text-neutral-400 dark:text-neutral-500">
+        <p className="mt-0.5 truncate font-mono text-xs text-muted">
           {performance.artistId}
         </p>
       </div>
 
       <div className="order-3 flex min-w-0 items-center gap-2 sm:justify-end">
-        <span className="max-w-full truncate rounded border border-neutral-200 bg-neutral-50 px-2 py-1 text-[13px] font-medium text-neutral-700 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200">
+        <span className="max-w-full truncate rounded-[4px] border border-border px-2 py-[2px] text-[13px] font-medium text-text">
           {performance.stageName}
         </span>
       </div>
@@ -212,17 +204,17 @@ export function SchedulePage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-2 border-b border-neutral-200 pb-4 dark:border-neutral-800">
+      <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-2 border-b border-border pb-4">
         <div className="min-w-0">
-          <h1 className="text-xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50">
+          <h1 className="text-[32px] font-semibold tracking-tight text-text">
             Schedule
           </h1>
-          <p className="mt-1.5 text-[15px] text-neutral-500 dark:text-neutral-400">
+          <p className="mt-1.5 text-[15px] text-muted">
             Running order for every artist set, in stage time.
           </p>
         </div>
         {data && (
-          <p className="shrink-0 text-[13px] text-neutral-500 tabular-nums dark:text-neutral-400">
+          <p className="shrink-0 font-mono text-[13px] text-muted tabular-nums">
             {performanceCount} {performanceCount === 1 ? "set" : "sets"} ·{" "}
             {stageCount} {stageCount === 1 ? "stage" : "stages"}
           </p>
@@ -232,12 +224,12 @@ export function SchedulePage() {
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_21rem] xl:items-start">
         <section aria-label="Performances" aria-busy={isPending}>
           {isPending && (
-            <div className="overflow-hidden rounded-md border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
-              <div className="flex items-center gap-2 border-b border-neutral-200 px-5 py-3 text-[13px] text-neutral-500 dark:border-neutral-800 dark:text-neutral-400">
+            <div className="overflow-hidden rounded-[6px] border border-border bg-surface">
+              <div className="flex items-center gap-2 border-b border-border px-5 py-3 text-[13px] text-muted">
                 <Spinner />
                 Loading...
               </div>
-              <ul className="divide-y divide-neutral-100 dark:divide-neutral-800">
+              <ul className="divide-y divide-border">
                 <RowSkeleton />
                 <RowSkeleton />
                 <RowSkeleton />
@@ -253,54 +245,34 @@ export function SchedulePage() {
           )}
 
           {!isPending && !isError && data?.length === 0 && (
-            <div className="rounded-md border border-dashed border-neutral-300 bg-white px-6 py-16 text-center dark:border-neutral-700 dark:bg-neutral-900">
-              <p className="text-[15px] font-medium text-neutral-700 dark:text-neutral-100">
+            <div className="rounded-[6px] border border-dashed border-border bg-surface px-6 py-16 text-center">
+              <p className="text-[15px] font-medium text-text">
                 There are no performances yet.
               </p>
-              <p className="mt-1.5 text-[15px] text-neutral-500 dark:text-neutral-400">
+              <p className="mt-1.5 text-[15px] text-muted">
                 Book the first set to start building the running order.
               </p>
             </div>
           )}
 
           {data && data.length > 0 && (
-            <div className="overflow-hidden rounded-md border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
-              <div
-                className={`hidden gap-x-5 border-b border-neutral-200 bg-neutral-50 px-5 py-2.5 sm:grid dark:border-neutral-800 dark:bg-neutral-800/40 ${listColumnsClassName}`}
-              >
-                <span className="text-[11px] font-medium tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
-                  Time
-                </span>
-                <span className="text-xs font-medium tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
-                  Artist
-                </span>
-                <span className="text-right text-xs font-medium tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
-                  Stage
-                </span>
-              </div>
-
-              {groups.map((group, groupIndex) => (
+            <div className="overflow-hidden rounded-[6px] border border-border bg-surface">
+              {groups.map((group) => (
                 <section
                   key={group.date}
                   aria-label={`Performances on ${group.date}`}
                 >
-                  <div
-                    className={`flex items-center justify-between gap-3 bg-neutral-50 px-5 py-2 dark:bg-neutral-800/40 ${
-                      groupIndex === 0
-                        ? "border-b border-neutral-200 dark:border-neutral-800"
-                        : "border-y border-neutral-200 dark:border-neutral-800"
-                    }`}
-                  >
-                    <h2 className="text-[13px] font-semibold tracking-wide text-neutral-700 tabular-nums dark:text-neutral-200">
+                  <div className="flex items-center justify-between gap-3 border-b border-border bg-bg px-5 py-[14px]">
+                    <h2 className="font-mono text-[14px] font-bold text-text tabular-nums">
                       {group.date}
                     </h2>
-                    <span className="text-[11px] font-medium tracking-wider text-neutral-400 uppercase tabular-nums dark:text-neutral-500">
+                    <span className="text-[12px] tracking-wider text-muted uppercase tabular-nums">
                       {group.items.length}{" "}
                       {group.items.length === 1 ? "set" : "sets"}
                     </span>
                   </div>
 
-                  <ul className="divide-y divide-neutral-100 dark:divide-neutral-800">
+                  <ul className="divide-y divide-border">
                     {group.items.map((performance) => (
                       <PerformanceRow
                         key={performance.id}
@@ -315,18 +287,16 @@ export function SchedulePage() {
         </section>
 
         <section aria-label="Create performance" className="xl:sticky xl:top-8">
-          <div className="rounded-md border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
-            <div className="border-b border-neutral-200 px-5 py-4 dark:border-neutral-800">
-              <h2 className="text-[15px] font-semibold text-neutral-900 dark:text-neutral-50">
-                Create performance
-              </h2>
-              <p className="mt-1 text-[13px] text-neutral-500 dark:text-neutral-400">
-                Submitted in UTC, shown in Europe/Tallinn.
-              </p>
-            </div>
+          <div className="rounded-[6px] border border-border bg-surface p-5">
+            <h2 className="font-heading text-[18px] font-semibold text-text">
+              Create performance
+            </h2>
+            <p className="mt-1 text-[13px] text-muted">
+              Submitted in UTC, shown in Europe/Tallinn.
+            </p>
 
-            <form onSubmit={formCreateHandler} className="space-y-4 px-5 py-5">
-              <div className="space-y-2">
+            <form onSubmit={formCreateHandler} className="mt-5 space-y-4">
+              <div>
                 <label className={labelClassName} htmlFor="stage-id">
                   Stage ID
                 </label>
@@ -343,7 +313,7 @@ export function SchedulePage() {
                 />
               </div>
 
-              <div className="space-y-2">
+              <div>
                 <label className={labelClassName} htmlFor="artist-id">
                   Artist ID
                 </label>
@@ -361,7 +331,7 @@ export function SchedulePage() {
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
-                <div className="space-y-2">
+                <div>
                   <label className={labelClassName} htmlFor="start-time">
                     Start time
                   </label>
@@ -371,11 +341,11 @@ export function SchedulePage() {
                     name="startTime"
                     value={startTime}
                     onChange={(e) => setStartTime(e.target.value)}
-                    className={inputClassName}
+                    className={`${inputClassName} font-mono`}
                   />
                 </div>
 
-                <div className="space-y-2">
+                <div>
                   <label className={labelClassName} htmlFor="end-time">
                     End time
                   </label>
@@ -385,12 +355,12 @@ export function SchedulePage() {
                     name="endTime"
                     value={endTime}
                     onChange={(e) => setEndTime(e.target.value)}
-                    className={inputClassName}
+                    className={`${inputClassName} font-mono`}
                   />
                 </div>
               </div>
 
-              <div className="space-y-2.5 border-t border-neutral-200 pt-4 dark:border-neutral-800">
+              <div className="space-y-4 pt-0">
                 {mutation.isPending && (
                   <StatusAlert tone="pending">Creating...</StatusAlert>
                 )}
@@ -412,13 +382,10 @@ export function SchedulePage() {
 
                 <button
                   type="submit"
-                  className="inline-flex h-10 w-full items-center justify-center gap-2 rounded bg-accent-600 px-3 text-[15px] font-medium text-white transition-colors hover:bg-accent-700 focus-visible:ring-2 focus-visible:ring-accent-600 focus-visible:ring-offset-2 focus-visible:outline-none dark:bg-accent-500 dark:text-neutral-950 dark:hover:bg-accent-400 dark:focus-visible:ring-accent-400 dark:focus-visible:ring-offset-neutral-900"
+                  disabled={mutation.isPending}
+                  className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-[6px] bg-accent px-4 text-[15px] font-semibold text-accent-fg transition-[filter] hover:brightness-95 focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:hover:brightness-110"
                 >
-                  {mutation.isPending && (
-                    <span>
-                      <Spinner />
-                    </span>
-                  )}
+                  {mutation.isPending && <Spinner />}
                   {mutation.isPending ? "Creating..." : "Create"}
                 </button>
               </div>

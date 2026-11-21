@@ -6,8 +6,6 @@ export async function apiFetch(
 ): Promise<Response> {
   const finalPath = `http://localhost:5178${path}`;
 
-  console.log("API REQUEST:", finalPath);
-
   const token = getToken();
   const headers = new Headers(options.headers);
 

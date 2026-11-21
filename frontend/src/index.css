@@ -1,25 +1,51 @@
 @import "tailwindcss";
+@import "@fontsource/commissioner/600.css";
+@import "@fontsource/golos-text/400.css";
+@import "@fontsource/golos-text/500.css";
+@import "@fontsource/golos-text/600.css";
+@import "@fontsource/jetbrains-mono/400.css";
+@import "@fontsource/jetbrains-mono/500.css";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-@theme {
-  --font-sans:
-    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif;
-  --font-mono:
-    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
-    "Liberation Mono", monospace;
+:root {
+  --bg: #f4f6f7;
+  --surface: #ffffff;
+  --border: #d5dde3;
+  --text: #0e141a;
+  --muted: #5b6772;
+  --accent: #3f6b0a;
+  --accent-fg: #ffffff;
+  --conflict: #c4262e;
+  --cool: #2f7a8f;
+}
 
-  --color-accent-50: #f4f7fd;
-  --color-accent-100: #e7eef9;
-  --color-accent-200: #cbdaee;
-  --color-accent-300: #a5bfe2;
-  --color-accent-400: #7ba1d3;
-  --color-accent-500: #5583c2;
-  --color-accent-600: #3b6ab0;
-  --color-accent-700: #305591;
-  --color-accent-800: #2a4876;
-  --color-accent-900: #263e63;
+.dark {
+  --bg: #0b0f14;
+  --surface: #141b23;
+  --border: #26313c;
+  --text: #e6eef2;
+  --muted: #8a99a6;
+  --accent: #c8f169;
+  --accent-fg: #0b0f14;
+  --conflict: #ff5a5f;
+  --cool: #5fb4c9;
+}
+
+@theme inline {
+  --font-sans: "Golos Text", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-heading: "Commissioner", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-conflict: var(--conflict);
+  --color-cool: var(--cool);
 }
 
 @layer base {
@@ -35,41 +61,26 @@
   body {
     margin: 0;
     min-height: 100svh;
-    background-color: var(--color-neutral-100);
-    color: var(--color-neutral-600);
+    background-color: var(--bg);
+    color: var(--text);
     font-family: var(--font-sans);
-    font-size: 0.9375rem;
+    font-size: 15px;
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  .dark body {
-    background-color: var(--color-neutral-950);
-    color: var(--color-neutral-400);
-  }
-
   h1,
   h2,
   h3 {
-    color: var(--color-neutral-900);
+    font-family: var(--font-heading);
+    color: var(--text);
     letter-spacing: -0.01em;
   }
 
-  .dark h1,
-  .dark h2,
-  .dark h3 {
-    color: var(--color-neutral-50);
-  }
-
   ::selection {
-    background-color: var(--color-accent-100);
-    color: var(--color-accent-900);
-  }
-
-  .dark ::selection {
-    background-color: var(--color-accent-800);
-    color: var(--color-accent-50);
+    background-color: color-mix(in srgb, var(--accent) 25%, transparent);
+    color: var(--text);
   }
 
   input[type="datetime-local"]::-webkit-calendar-picker-indicator {
@@ -84,5 +95,16 @@
   .dark input[type="datetime-local"]::-webkit-calendar-picker-indicator,
   .dark input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
     opacity: 0.9;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }

@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet } from "react-router-dom";
 import { useState } from "react";
 import {
   Clock,
@@ -37,7 +37,7 @@ function ThemeToggle({
       aria-label={label}
       title={label}
       aria-pressed={isDark}
-      className="grid size-8 shrink-0 place-items-center rounded border border-neutral-200 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900 focus-visible:ring-2 focus-visible:ring-accent-600 focus-visible:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-neutral-50 dark:focus-visible:ring-accent-400"
+      className="grid size-8 shrink-0 place-items-center rounded-[6px] border border-border text-muted transition-colors hover:text-text focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none"
     >
       {isDark ? <Sun {...navIconProps} /> : <Moon {...navIconProps} />}
     </button>
@@ -46,10 +46,10 @@ function ThemeToggle({
 
 function Brand() {
   return (
-    <span className="inline-flex items-center rounded border border-neutral-300 px-3.5 py-1.5 dark:border-neutral-700">
-      <span className="text-[15px] font-bold tracking-[0.06em]">
-        <span className="text-accent-600 dark:text-accent-400">STAGE</span>
-        <span className="text-neutral-900 dark:text-neutral-50">FLOW</span>
+    <span className="inline-flex items-center">
+      <span className="font-heading text-[15px] font-semibold tracking-[0.06em]">
+        <span className="text-text">STAGE</span>
+        <span className="text-accent">FLOW</span>
       </span>
     </span>
   );
@@ -65,6 +65,17 @@ const navItems: { label: string; to?: string; icon: LucideIcon }[] = [
   { label: "Orders", icon: ShoppingCart },
 ];
 
+function SignInLink({ className = "" }: { className?: string }) {
+  return (
+    <Link
+      to="/login"
+      className={`inline-flex h-9 items-center justify-center rounded-[6px] border border-border px-4 text-[14px] text-text transition-colors hover:bg-surface focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none ${className}`}
+    >
+      Sign in
+    </Link>
+  );
+}
+
 function Sidebar({
   isDark,
   onToggleTheme,
@@ -73,39 +84,39 @@ function Sidebar({
   onToggleTheme: () => void;
 }) {
   return (
-    <aside className="sticky top-0 hidden h-svh w-64 shrink-0 flex-col border-r border-neutral-200 bg-white lg:flex dark:border-neutral-800 dark:bg-neutral-950">
-      <div className="flex h-16 items-center border-b border-neutral-200 px-5 dark:border-neutral-800">
+    <aside className="sticky top-0 hidden h-svh w-56 shrink-0 flex-col border-r border-border bg-bg lg:flex">
+      <div className="flex items-center px-6 pt-6 pb-6">
         <Brand />
       </div>
 
-      <nav aria-label="Main" className="flex-1 overflow-y-auto px-3 py-5">
-        <p className="px-2 pb-2 text-xs font-medium tracking-wider text-neutral-400 uppercase dark:text-neutral-400">
+      <nav aria-label="Main" className="flex-1 overflow-y-auto py-2">
+        <p className="px-6 pb-2 text-xs font-medium tracking-wider text-muted uppercase">
           Operations
         </p>
-        <ul className="space-y-1">
+        <ul>
           {navItems.map((item) => (
             <li key={item.label}>
               {item.to ? (
                 <NavLink
                   to={item.to}
                   className={({ isActive }) =>
-                    `flex items-center gap-2.5 rounded px-2 py-2 text-[15px] transition-colors ${
+                    `relative flex h-10 items-center gap-[10px] pl-[14px] pr-4 text-[15px] transition-colors ${
                       isActive
-                        ? "bg-accent-50 font-medium text-accent-800 dark:bg-accent-500/15 dark:font-medium dark:text-accent-100"
-                        : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800/70 dark:hover:text-neutral-100"
+                        ? "bg-surface font-medium text-text"
+                        : "text-muted hover:text-text"
                     }`
                   }
                 >
                   {({ isActive }) => (
                     <>
-                      <item.icon {...navIconProps} />
-                      {item.label}
                       {isActive && (
                         <span
                           aria-hidden="true"
-                          className="ml-auto size-1.5 rounded-full bg-accent-600 dark:bg-accent-400"
+                          className="absolute inset-y-0 left-0 w-[2px] bg-accent"
                         />
                       )}
+                      <item.icon {...navIconProps} />
+                      {item.label}
                     </>
                   )}
                 </NavLink>
@@ -113,7 +124,7 @@ function Sidebar({
                 <span
                   aria-disabled="true"
                   title="Not available yet"
-                  className="flex cursor-default items-center gap-2.5 rounded px-2 py-2 text-[15px] text-neutral-400 dark:text-neutral-600"
+                  className="flex h-10 cursor-default items-center gap-[10px] pl-[14px] pr-4 text-[15px] text-muted/50"
                 >
                   <item.icon {...navIconProps} />
                   {item.label}
@@ -124,7 +135,8 @@ function Sidebar({
         </ul>
       </nav>
 
-      <div className="flex items-center justify-end border-t border-neutral-200 px-5 py-3 dark:border-neutral-800">
+      <div className="flex items-center justify-between border-t border-border px-4 py-3">
+        <SignInLink />
         <ThemeToggle isDark={isDark} onToggle={onToggleTheme} />
       </div>
     </aside>
@@ -139,26 +151,21 @@ function MobileHeader({
   onToggleTheme: () => void;
 }) {
   return (
-    <header className="sticky top-0 z-20 flex h-16 items-center border-b border-neutral-200 bg-white px-4 lg:hidden dark:border-neutral-800 dark:bg-neutral-950">
+    <header className="sticky top-0 z-20 flex h-16 items-center border-b border-border bg-bg px-4 lg:hidden">
       <Brand />
       <nav aria-label="Main" className="ml-auto flex items-center gap-2">
-        <ul>
-          <li>
-            <NavLink
-              to="schedule"
-              className={({ isActive }) =>
-                `flex items-center gap-2 rounded px-2 py-2 text-[15px] ${
-                  isActive
-                    ? "bg-accent-50 font-medium text-accent-800 dark:bg-accent-500/15 dark:text-accent-100"
-                    : "text-neutral-600 dark:text-neutral-400"
-                }`
-              }
-            >
-              <Clock {...navIconProps} />
-              <span className="hidden sm:inline">Schedule</span>
-            </NavLink>
-          </li>
-        </ul>
+        <NavLink
+          to="schedule"
+          className={({ isActive }) =>
+            `flex items-center gap-2 rounded-[6px] px-2 py-2 text-[15px] transition-colors ${
+              isActive ? "font-medium text-text" : "text-muted hover:text-text"
+            }`
+          }
+        >
+          <Clock {...navIconProps} />
+          <span className="hidden sm:inline">Schedule</span>
+        </NavLink>
+        <SignInLink />
         <ThemeToggle isDark={isDark} onToggle={onToggleTheme} />
       </nav>
     </header>
@@ -190,20 +197,18 @@ export function AppLayout() {
       <div className="flex min-w-0 flex-1 flex-col">
         <MobileHeader isDark={isDark} onToggleTheme={toggleTheme} />
 
-        <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-          <div className="mx-auto w-full max-w-6xl">
+        <main className="flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-10">
+          <div className="mx-auto w-full max-w-[72rem]">
             <Outlet />
           </div>
         </main>
 
-        <footer className="border-t border-neutral-200 px-4 py-4 sm:px-6 lg:px-8 dark:border-neutral-800">
-          <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-4 gap-y-1">
-            <p className="text-[13px] text-neutral-500 dark:text-neutral-400">
+        <footer className="border-t border-border px-4 py-4 sm:px-6 lg:px-10">
+          <div className="mx-auto flex w-full max-w-[72rem] flex-wrap items-center gap-x-4 gap-y-1">
+            <p className="text-[13px] text-muted">
               StageFlow · Festival Operations Platform
             </p>
-            <p className="text-[13px] text-neutral-400 sm:ml-auto dark:text-neutral-500">
-              © 2026 faaazy
-            </p>
+            <p className="text-[13px] text-muted sm:ml-auto">© 2026 faaazy</p>
           </div>
         </footer>
       </div>
