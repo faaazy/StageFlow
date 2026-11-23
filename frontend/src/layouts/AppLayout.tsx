@@ -12,6 +12,7 @@ import {
   Sun,
   Ticket,
 } from "lucide-react";
+import { useAuth } from "../auth/AuthContext";
 
 const navIconProps = {
   "aria-hidden": true,
@@ -65,14 +66,23 @@ const navItems: { label: string; to?: string; icon: LucideIcon }[] = [
   { label: "Orders", icon: ShoppingCart },
 ];
 
-function SignInLink({ className = "" }: { className?: string }) {
+function AuthControl({ className = "" }: { className?: string }) {
+  const { isAuthenticated, signOut } = useAuth();
+
+  const authButtonClassName = `inline-flex h-9 items-center justify-center rounded-[6px] border border-border px-4 text-[14px] text-text transition-colors hover:bg-surface focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none ${className}`;
+
   return (
-    <Link
-      to="/login"
-      className={`inline-flex h-9 items-center justify-center rounded-[6px] border border-border px-4 text-[14px] text-text transition-colors hover:bg-surface focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none ${className}`}
-    >
-      Sign in
-    </Link>
+    <>
+      {isAuthenticated ? (
+        <button className={authButtonClassName} type="button" onClick={signOut}>
+          Sign Out
+        </button>
+      ) : (
+        <Link to="/login" className={authButtonClassName}>
+          Sign in
+        </Link>
+      )}
+    </>
   );
 }
 
@@ -136,7 +146,7 @@ function Sidebar({
       </nav>
 
       <div className="flex items-center justify-between border-t border-border px-4 py-3">
-        <SignInLink />
+        <AuthControl />
         <ThemeToggle isDark={isDark} onToggle={onToggleTheme} />
       </div>
     </aside>
@@ -165,7 +175,7 @@ function MobileHeader({
           <Clock {...navIconProps} />
           <span className="hidden sm:inline">Schedule</span>
         </NavLink>
-        <SignInLink />
+        <AuthControl />
         <ThemeToggle isDark={isDark} onToggle={onToggleTheme} />
       </nav>
     </header>

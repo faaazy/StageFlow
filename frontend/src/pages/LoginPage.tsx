@@ -4,6 +4,7 @@ import { useState, type SubmitEvent } from "react";
 import { login } from "../api/authApi";
 import { setToken } from "../auth/tokenStorage";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
 
 const inputClassName =
   "block h-10 w-full rounded-[6px] border border-border bg-surface px-3 text-[15px] text-text transition-colors placeholder:text-muted focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none dark:bg-bg";
@@ -20,11 +21,15 @@ export function LoginPage() {
 
   const navigate = useNavigate();
 
+  const { signIn } = useAuth();
+
   const mutation = useMutation({
     mutationFn: ({ email, password }: { email: string; password: string }) =>
       login(email, password),
+
     onSuccess: (token) => {
-      setToken(token);
+      signIn(token);
+
       navigate("/schedule");
     },
   });
@@ -117,8 +122,13 @@ export function LoginPage() {
           )}
         </form>
 
-        <nav aria-label="Account navigation" className="mt-6 border-t border-border pt-5">
-          <p className="mb-3 text-[13px] text-muted">Don&apos;t have an account?</p>
+        <nav
+          aria-label="Account navigation"
+          className="mt-6 border-t border-border pt-5"
+        >
+          <p className="mb-3 text-[13px] text-muted">
+            Don&apos;t have an account?
+          </p>
           <Link to="/register" className={secondaryLinkClassName}>
             Sign up
           </Link>
