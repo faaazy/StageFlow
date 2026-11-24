@@ -1,4 +1,4 @@
-import { Link, NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet } from "react-router-dom";
 import { useState } from "react";
 import {
   Clock,
@@ -12,7 +12,8 @@ import {
   Sun,
   Ticket,
 } from "lucide-react";
-import { useAuth } from "../auth/AuthContext";
+import { Brand } from "../components/Brand";
+import { AuthControl } from "../components/AuthControl";
 
 const navIconProps = {
   "aria-hidden": true,
@@ -45,17 +46,6 @@ function ThemeToggle({
   );
 }
 
-function Brand() {
-  return (
-    <span className="inline-flex items-center">
-      <span className="font-heading text-[15px] font-semibold tracking-[0.06em]">
-        <span className="text-text">STAGE</span>
-        <span className="text-accent">FLOW</span>
-      </span>
-    </span>
-  );
-}
-
 const navItems: { label: string; to?: string; icon: LucideIcon }[] = [
   { label: "Dashboard", icon: LayoutDashboard },
   { label: "Festivals", icon: Flag },
@@ -65,26 +55,6 @@ const navItems: { label: string; to?: string; icon: LucideIcon }[] = [
   { label: "Tickets", icon: Ticket },
   { label: "Orders", icon: ShoppingCart },
 ];
-
-function AuthControl({ className = "" }: { className?: string }) {
-  const { isAuthenticated, signOut } = useAuth();
-
-  const authButtonClassName = `inline-flex h-9 items-center justify-center rounded-[6px] border border-border px-4 text-[14px] text-text transition-colors hover:bg-surface focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none ${className}`;
-
-  return (
-    <>
-      {isAuthenticated ? (
-        <button className={authButtonClassName} type="button" onClick={signOut}>
-          Sign Out
-        </button>
-      ) : (
-        <Link to="/login" className={authButtonClassName}>
-          Sign in
-        </Link>
-      )}
-    </>
-  );
-}
 
 function Sidebar({
   isDark,

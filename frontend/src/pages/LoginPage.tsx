@@ -2,7 +2,6 @@ import { useMutation } from "@tanstack/react-query";
 import { ArrowLeft } from "lucide-react";
 import { useState, type SubmitEvent } from "react";
 import { login } from "../api/authApi";
-import { setToken } from "../auth/tokenStorage";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 

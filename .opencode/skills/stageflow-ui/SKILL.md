@@ -106,3 +106,18 @@ description: Visual style guide for the StageFlow frontend (React + Tailwind v4)
 1. Проверь обе темы и узкий экран (~375px).
 2. `npm run build`, `npm run lint` (если скрипт есть), `npm test`: существующие тесты должны проходить без правок.
 3. Перечисли изменённые файлы и всё, что пришлось изменить вне чистого оформления.
+
+## Публичный layout и лендинг
+
+- Публичные страницы работают через `PublicLayout` + `Outlet`, без сайдбара и без переключателя темы: тема берётся из сохранённой на `<html>`.
+- Обёртка: `flex min-h-svh flex-col bg-bg text-text`, `main` имеет `flex-1`; контейнер и отступы задаёт сама страница.
+- Шапка: `sticky top-0 z-20 h-16 border-b border-border bg-bg`, внутри `mx-auto flex h-full w-full max-w-[72rem] items-center px-4 sm:px-6 lg:px-10`.
+- Слева `Brand` в ссылке на `/`; справа `ml-auto flex items-center gap-2 sm:gap-4`: текстовая ссылка «For organizers» (15px, `text-muted hover:text-text`) и `AuthControl`.
+- Подвал: `border-t border-border`, тот же контейнер с `py-6`, текст «StageFlow · Festival Operations Platform» 13px `text-muted`.
+- Лендинг: контейнер `mx-auto w-full max-w-[72rem] px-4 pt-14 pb-20 sm:px-6 lg:px-10 lg:pt-24`, секции разделены `mt-20 lg:mt-28`.
+- Hero: eyebrow 12px uppercase `tracking-wider text-muted`, `h1` 36/56px с `max-w-[20ch] leading-[1.1] tracking-tight`, абзац 18px `text-muted max-w-[38rem]`.
+- Кнопки hero: основная `w-auto h-11 px-6`, вторичная `h-11 px-6`, ряд `mt-8 flex flex-wrap items-center gap-3`; ниже 13px `text-muted` с чипом «Coming soon».
+- «What you get»: `h2` 24px и `grid gap-4 md:grid-cols-3`; карточки `rounded-[6px] border border-border bg-surface p-5`, иконка lucide 20px `text-accent` (`strokeWidth={1.5}`), `h3` 17px, абзац 15px `text-muted`.
+- Чип «Coming soon» у карточки Tickets — тот же, что в hero: `rounded-[4px] border border-border px-2 py-[2px] text-[13px] font-medium text-text`.
+- Панель «For organizers»: карточка `p-6 sm:p-8`, на `md` `flex items-center justify-between gap-8`; слева `h2` 24px и абзац 15px `max-w-[34rem]`, справа вторичная кнопка-ссылка `h-11 px-6 shrink-0`.
+- У всех ссылок и кнопок `focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none`; декоративные иконки скрыты через `aria-hidden`.
