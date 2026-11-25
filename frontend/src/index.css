@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "@fontsource/commissioner/600.css";
+@import "@fontsource/commissioner/900.css";
 @import "@fontsource/golos-text/400.css";
 @import "@fontsource/golos-text/500.css";
 @import "@fontsource/golos-text/600.css";
@@ -35,6 +36,7 @@
 @theme inline {
   --font-sans: "Golos Text", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-heading: "Commissioner", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Commissioner", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   --color-bg: var(--bg);
@@ -106,5 +108,65 @@
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
+  }
+}
+
+@layer utilities {
+  .poster-background {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .poster-background-grid {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    color: var(--border);
+    pointer-events: none;
+  }
+
+  .animate-marquee {
+    animation: stageflow-marquee 36s linear infinite;
+  }
+
+  .ticket-cutouts {
+    position: relative;
+  }
+
+  .ticket-cutouts::before,
+  .ticket-cutouts::after {
+    content: "";
+    position: absolute;
+    top: -7px;
+    width: 14px;
+    height: 14px;
+    border: 1px solid var(--border);
+    border-radius: 9999px;
+    background-color: var(--bg);
+    pointer-events: none;
+  }
+
+  .ticket-cutouts::before {
+    left: calc(-1.25rem - 7px);
+  }
+
+  .ticket-cutouts::after {
+    right: calc(-1.25rem - 7px);
+  }
+}
+
+@keyframes stageflow-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation: none !important;
+    transform: none !important;
   }
 }

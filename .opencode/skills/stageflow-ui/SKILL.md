@@ -121,3 +121,25 @@ description: Visual style guide for the StageFlow frontend (React + Tailwind v4)
 - Чип «Coming soon» у карточки Tickets — тот же, что в hero: `rounded-[4px] border border-border px-2 py-[2px] text-[13px] font-medium text-text`.
 - Панель «For organizers»: карточка `p-6 sm:p-8`, на `md` `flex items-center justify-between gap-8`; слева `h2` 24px и абзац 15px `max-w-[34rem]`, справа вторичная кнопка-ссылка `h-11 px-6 shrink-0`.
 - У всех ссылок и кнопок `focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none`; декоративные иконки скрыты через `aria-hidden`.
+
+## Публичный режим (афиша)
+
+- Актуальный вид публичной части — «афиша»: крупная типографика, видимая сетка, тонкие линии `border-border`, моно-метаданные, один акцент; градиенты, тени, фото и скругления больше 4px запрещены.
+- Фон страницы — очень тихая печатная сетка регистрационных крестиков: слой `.poster-background-grid` в `PublicLayout`, SVG `<pattern>` 112×112, штрих `currentColor` от `var(--border)`; слой `fixed inset-0 z-0 pointer-events-none aria-hidden`, контент выше через `relative z-10`.
+- Новый шрифт не подключаем: `--font-display` указывает на Commissioner 900; для крупных заголовков используй `font-display font-black uppercase leading-[0.9] tracking-tight text-balance`.
+- Размер display-заголовков задаётся через clamp; hero использует `text-[clamp(2.25rem,10.5vw,10rem)]`, чтобы три строки помещались уже на 320px, без `overflow-wrap:anywhere`.
+- Строка метаданных над hero: контейнер, `border-b border-border py-3`, `font-mono text-[12px] uppercase tracking-wider text-muted`, слева «Festival operations & ticketing», справа «Running order · Stages · Set times» (скрыто на мобильном).
+- Шапка: `sticky top-0 z-20 bg-bg border-b border-border`, высота `h-14 sm:h-16`; ячейки с `border-l border-border` и `px-2 sm:px-4` (на 320px иначе не влезает): логотип, «For organizers» (на узком экране коротко «Organizers», mono 13px uppercase), `AuthControl`.
+- Hero: три строки `block` в одном `h1` — «Every set.», «Every stage.», «On time.»; третья строка `text-accent`, между строками оставляй пробел для корректного текста.
+- Под hero: абзац 18px `text-muted max-w-[38rem]`, кнопки `h-11 px-6` и чип «Coming soon» в стиле чипа сцены.
+- Пример расписания: карточка `border border-border bg-surface`, шапка `bg-bg border-b border-border`, 4 строки через `divide-y divide-border`, сетка `sm:grid-cols-[7.5rem_1fr_auto]`.
+- Имена артистов и «Headliner» растут по строкам через clamp; «Headliner» окрашивается в `text-accent`, время — `font-mono tabular-nums`.
+- Блок конфликта внутри карточки: `border-t border-border border-l-2 border-l-conflict bg-surface`, заголовок `text-conflict`, декоративный `aria-hidden="true"`.
+- Бегущая строка — full-bleed полоса `bg-accent text-accent-fg border-y border-border overflow-hidden py-3`, весь блок `aria-hidden="true"`.
+- Петля делается двумя идентичными половинами внутри `flex w-max animate-marquee`; ключ `stageflow-marquee` и класс объявлены в `index.css`, длительность 36s linear infinite.
+- При `prefers-reduced-motion: reduce` `.animate-marquee` отключается (`animation: none`, `transform: none`): остаётся статичная строка, обрезанная по ширине.
+- Карточки «What you get» — билеты: `rounded-[2px] border border-border bg-surface p-5`, индекс `01/02/03` цвета `text-accent`.
+- Перфорация билета: `ticket-cutouts my-4 border-t border-dashed border-border`; вырезы `::before`/`::after` 14px цвета `bg-bg` с `border-border` смещены наполовину наружу.
+- Плашка организатора: `bg-accent text-accent-fg p-6 sm:p-10` без границы; h2 display 900 uppercase `text-[clamp(2.25rem,7vw,4.5rem)]`. Явно задавай `text-accent-fg` на самом h2: базовое правило `h2 { color: var(--text) }` иначе перебивает цвет родителя и даёт белый по лаймовому в тёмной теме.
+- Кнопка на акцентной плашке инвертирована: `bg-bg text-text`, hover `brightness-110`, фокус `ring-bg ring-offset-2 ring-offset-accent`.
+- Декоративные элементы (иконки, бегущая строка, вырезы, пример конфликта) скрыты через `aria-hidden`; у всех ссылок остаётся видимый `focus-visible` ring.
