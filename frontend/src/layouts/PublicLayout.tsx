@@ -1,6 +1,7 @@
 import { Link, Outlet } from "react-router-dom";
 import { AuthControl } from "../components/AuthControl";
 import { Brand } from "../components/Brand";
+import { ThemeToggle } from "../components/ThemeToggle";
 
 export function PublicLayout() {
   return (
@@ -58,6 +59,9 @@ export function PublicLayout() {
             </div>
             <div className="flex h-full items-center border-l border-border px-2 sm:px-4">
               <AuthControl />
+            </div>
+            <div className="flex h-full items-center border-l border-border px-2 sm:px-4">
+              <ThemeToggle />
             </div>
           </div>
         </div>

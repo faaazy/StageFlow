@@ -3,6 +3,7 @@ import { afterEach, describe, expect, test } from "vitest";
 import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import { AppLayout } from "./AppLayout";
 import { AuthProvider } from "../auth/AuthContext";
+import { ThemeProvider } from "../theme/ThemeContext";
 
 afterEach(() => cleanup());
 afterEach(() => localStorage.clear());
@@ -26,9 +27,11 @@ describe("AppLayout", () => {
     );
 
     render(
-      <AuthProvider>
-        <RouterProvider router={router} />
-      </AuthProvider>,
+      <ThemeProvider>
+        <AuthProvider>
+          <RouterProvider router={router} />
+        </AuthProvider>
+      </ThemeProvider>,
     );
 
     expect(

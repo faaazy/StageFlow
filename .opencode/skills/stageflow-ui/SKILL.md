@@ -34,7 +34,12 @@ description: Visual style guide for the StageFlow frontend (React + Tailwind v4)
 
 ## Тема
 
-Тёмная тема это класс `dark` на `<html>`. Предустановка и переключатель (`ThemeToggle`, ключ `stageflow-theme` в localStorage, скрипт в `index.html`) уже работают. Не менять механизм: только оформление кнопки.
+Тёмная тема это класс `dark` на `<html>` — единственный источник правды. Стартовый скрипт в `index.html` читает `localStorage["stageflow-theme"]` (значения `"dark"` / `"light"`, иначе `prefers-color-scheme`) и ставит класс до загрузки React; `index.html` и этот ключ не менять.
+
+- Общее состояние в `src/theme`: `ThemeProvider` (только компонент, в файле `ThemeContext.tsx`) и `useTheme` (в `useTheme.ts`, чтобы соблюсти `react-refresh/only-export-components`); значение `{ isDark, toggleTheme }`, без провайдера хук бросает `Error("useTheme must be used inside ThemeProvider")`.
+- `ThemeProvider` лениво инициализирует `isDark` из `document.documentElement.classList.contains("dark")`. `toggleTheme` берёт `nextIsDark = !classList.contains("dark")`, переключает класс, обновляет состояние и пишет `"dark"`/`"light"` в `localStorage` внутри `try/catch` (ошибка игнорируется). Поведение обязано оставаться прежним.
+- В `main.tsx`: `QueryClientProvider → ThemeProvider → AuthProvider → RouterProvider`.
+- `ThemeToggle` в `src/components/ThemeToggle.tsx` — общая кнопка без пропсов, берёт `isDark`/`toggleTheme` из `useTheme()`. Один и тот же компонент в публичной шапке, сайдбаре и мобильной шапке: так иконки не расходятся при двух смонтированных переключателях.
 
 ## Шрифты
 
@@ -74,7 +79,7 @@ description: Visual style guide for the StageFlow frontend (React + Tailwind v4)
 
 **Спиннер:** `size-4 animate-spin rounded-full border-2 border-current border-t-transparent`. **Skeleton:** блоки `bg-border` с `animate-pulse`.
 
-**Кнопка темы:** `size-8`, `rounded-[6px] border border-border text-muted hover:text-text`, иконки lucide 18px, `strokeWidth` 1.5.
+**Кнопка темы** (`ThemeToggle` из `src/components/ThemeToggle.tsx`): `size-8`, `rounded-[6px] border border-border text-muted hover:text-text`, иконки lucide `Sun`/`Moon` 18px, `strokeWidth` 1.5; `aria-label` и `title` меняются по теме, `aria-pressed={isDark}`.
 
 ## Шаблон страницы с данными (образец SchedulePage)
 
@@ -100,7 +105,10 @@ description: Visual style guide for the StageFlow frontend (React + Tailwind v4)
 
 - Сайдбар: `sticky top-0 hidden h-svh w-56 shrink-0 flex-col border-r border-border bg-bg lg:flex`; мобильная шапка высотой `h-16` с нижней границей.
 - Пункт меню: высота `h-10`, 15px, иконка lucide 18px, `gap-[10px]`; обычный `text-muted hover:text-text`; активный на `bg-surface` с полосой слева `absolute inset-y-0 left-0 w-[2px] bg-accent`; недоступный `text-muted/50`, `cursor-default`, не кликабельный.
-- Низ сайдбара: граница сверху, ссылка «Sign in» слева, `ThemeToggle` справа.
+- Логотип в сайдбаре и мобильной шапке — `Brand` в `Link to="/"` с `aria-label="StageFlow home"` и классами фокуса `rounded-[2px] focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none`; размер и положение логотипа не меняются.
+- Низ сайдбара: контейнер с `border-t border-border`; над нижней строкой — обычная `Link to="/"` «Public site» (`h-10 px-[14px]`, 15px `text-muted hover:text-text`, `gap-[10px]`, иконка `Globe` 18px `aria-hidden`, не `NavLink`); ниже ещё одна граница, слева `AuthControl`, справа `<ThemeToggle />`.
+- Мобильная шапка: `sticky top-0 z-20 flex h-16 items-center border-b border-border bg-bg px-4 lg:hidden`; слева логотип-ссылка, справа `NavLink` «Schedule», `AuthControl` и `<ThemeToggle />`. Отдельной ссылки «Public site» здесь нет.
+- `Sidebar` и `MobileHeader` не принимают пропсов про тему: `ThemeToggle` сам читает контекст.
 
 ## Доступность и анимации
 
@@ -117,11 +125,11 @@ description: Visual style guide for the StageFlow frontend (React + Tailwind v4)
 
 ## Публичный режим (афиша)
 
-- Публичные страницы (`/`, `/login`, `/register`) работают через `PublicLayout` + `Outlet`: в `children` рядом с `index` лежат `login` и `register`. Без сайдбара и без переключателя темы: тема берётся из сохранённой на `<html>`.
+- Публичные страницы (`/`, `/login`, `/register`) работают через `PublicLayout` + `Outlet`: в `children` рядом с `index` лежат `login` и `register`. Без сайдбара; текущая тема берётся из класса на `<html>`, переключатель находится в шапке.
 - Обёртка: `poster-background flex min-h-svh flex-col bg-bg text-text`; `main` — `relative z-10 flex-1`; подвал `relative z-10 border-t border-border`, внутри тот же контейнер `mx-auto w-full max-w-[72rem] px-4 py-6 sm:px-6 lg:px-10` с текстом «StageFlow · Festival Operations Platform» 12px `font-mono uppercase tracking-wider text-muted`. Контейнер и отступы конкретной страницы задаёт сама страница.
 - Стиль «афиша»: крупная типографика, видимая сетка, тонкие линии `border-border`, моно-метаданные, один акцент; градиенты, тени, фото и скругления больше 4px запрещены.
 - Фон страницы — очень тихая печатная сетка регистрационных крестиков: слой `.poster-background-grid` в `PublicLayout`, SVG `<pattern>` 112×112, штрих `currentColor` от `var(--border)`; слой `fixed inset-0 z-0 pointer-events-none aria-hidden`, контент выше через `relative z-10`.
-- Шапка: `sticky top-0 z-20 bg-bg border-b border-border`, высота `h-14 sm:h-16`, внутри `mx-auto flex h-14 w-full max-w-[72rem] items-center sm:h-16`; ячейки с `border-l border-border` и `px-2 sm:px-4` (на 320px иначе не влезает): слева `Brand` в ссылке на `/`, справа `ml-auto` — «For organizers» (на узком экране коротко «Organizers», mono 13px uppercase) и `AuthControl`. Старое расположение через `gap-2 sm:gap-4` и 15px ссылку заменили ячейками.
+- Шапка: `sticky top-0 z-20 bg-bg border-b border-border`, высота `h-14 sm:h-16`, внутри `mx-auto flex h-14 w-full max-w-[72rem] items-center sm:h-16`; ячейки с `border-l border-border` и `px-2 sm:px-4` (на 320px иначе не влезает): слева `Brand` в ссылке на `/`, справа `ml-auto` — «For organizers» (на узком экране коротко «Organizers», mono 13px uppercase), `AuthControl` и последней ячейкой `<ThemeToggle />`. Старое расположение через `gap-2 sm:gap-4` и 15px ссылку заменили ячейками.
 - Новый шрифт не подключаем: `--font-display` указывает на Commissioner 900; для крупных заголовков используй `font-display font-black uppercase leading-[0.9] tracking-tight text-balance`.
 - Размер display-заголовков задаётся через clamp; hero использует `text-[clamp(2.25rem,10.5vw,10rem)]`, чтобы три строки помещались уже на 320px, без `overflow-wrap:anywhere`.
 - Лендинг: контейнер `mx-auto w-full max-w-[72rem] px-4 pt-10 sm:px-6 lg:px-10 lg:pt-16`, второй контейнер без верхнего отступа; секции разделены `mt-14`/`mt-16`, последняя с `pb-20`. Прежние `pt-14 pb-20` и `mt-20 lg:mt-28` устарели.
