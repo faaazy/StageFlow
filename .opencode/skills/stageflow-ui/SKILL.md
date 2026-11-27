@@ -84,9 +84,17 @@ description: Visual style guide for the StageFlow frontend (React + Tailwind v4)
 - Строка выступления: колонки `sm:grid-cols-[170px_minmax(0,1fr)_auto]`: время `font-mono text-[18px] tabular-nums` и длительность под ним `font-mono text-[13px] text-muted`; название `text-[16px] font-semibold`; справа чип сцены.
 - Состояния всегда все четыре: загрузка (skeleton), ошибка (`StatusAlert`), пусто (карточка с пунктирной границей `border-dashed`, `py-16`, по центру), данные.
 
-## Шаблон страницы входа / регистрации (образец LoginPage)
+## Шаблон страницы входа / регистрации (AuthCard)
 
-Страница БЕЗ сайдбара, маршрут вне `AppLayout`. Фон `bg-bg`, карточка по центру (`grid min-h-svh place-items-center px-4`), `w-full max-w-[390px] rounded-[8px] border border-border bg-surface p-7`. Сверху логотип, затем `h1` `mt-5 text-[28px] font-semibold`, форма `mt-6` с полями `space-y-4`, основная кнопка `mt-5`, сообщение об ошибке `mt-4` под кнопкой.
+`/login` и `/register` — дочерние маршруты `PublicLayout` (в `children` рядом с `index`), а не отдельные страницы вне layout: фон с крестиками, шапка с логотипом и подвал общие с лендингом. Собственный логотип и ссылку «назад» внутри карточки не делать — логотип в шапке уже ведёт на `/`.
+
+- `AuthCard({ eyebrow, title, children })` в `src/components/AuthCard.tsx`: обёртка `mx-auto flex w-full max-w-[72rem] justify-center px-4 py-12 sm:px-6 sm:py-20 lg:px-10`; карточка `w-full max-w-[420px] rounded-[2px] border border-border bg-surface`.
+- Верхняя строка карточки: `border-b border-border bg-bg px-6 py-3 font-mono text-[12px] uppercase tracking-wider text-muted`; `eyebrow` — «Account» для входа, «New account» для регистрации.
+- Тело `p-6 sm:p-8`: `h1` `font-display text-[clamp(2.25rem,9vw,3.25rem)] font-black uppercase leading-[0.95] tracking-tight` с текстом «Sign in» / «Sign up»; `children` в обёртке `mt-6` (поэтому форма сама `mt-6` не создаёт).
+- Общие классы полей, кнопки и ошибки — в `src/components/formStyles.ts`: `labelClassName`, `inputClassName`, `primaryButtonClassName` (на всю ширину), `errorBlockClassName`. Поля и кнопка `rounded-[4px]`, блок ошибки `rounded-[2px]`.
+- Форма без изменений логики: поля `space-y-4`, `label`/`id` и `autoComplete` как раньше; кнопка `mt-5` внутри `primaryButtonClassName`; ошибка `role="status" aria-live="polite"` с `border-l-conflict` и `text-conflict`.
+- Под формой строка `mt-5 text-[14px] text-muted`: «No account yet? Register» / «Already have an account? Sign in». Ссылка `text-text underline underline-offset-2 hover:text-accent` с видимым `focus-visible` ring.
+- `AuthControl` в шапке на этих страницах не трогать.
 
 ## Боковое меню и шапка (образец AppLayout)
 
@@ -107,39 +115,53 @@ description: Visual style guide for the StageFlow frontend (React + Tailwind v4)
 2. `npm run build`, `npm run lint` (если скрипт есть), `npm test`: существующие тесты должны проходить без правок.
 3. Перечисли изменённые файлы и всё, что пришлось изменить вне чистого оформления.
 
-## Публичный layout и лендинг
-
-- Публичные страницы работают через `PublicLayout` + `Outlet`, без сайдбара и без переключателя темы: тема берётся из сохранённой на `<html>`.
-- Обёртка: `flex min-h-svh flex-col bg-bg text-text`, `main` имеет `flex-1`; контейнер и отступы задаёт сама страница.
-- Шапка: `sticky top-0 z-20 h-16 border-b border-border bg-bg`, внутри `mx-auto flex h-full w-full max-w-[72rem] items-center px-4 sm:px-6 lg:px-10`.
-- Слева `Brand` в ссылке на `/`; справа `ml-auto flex items-center gap-2 sm:gap-4`: текстовая ссылка «For organizers» (15px, `text-muted hover:text-text`) и `AuthControl`.
-- Подвал: `border-t border-border`, тот же контейнер с `py-6`, текст «StageFlow · Festival Operations Platform» 13px `text-muted`.
-- Лендинг: контейнер `mx-auto w-full max-w-[72rem] px-4 pt-14 pb-20 sm:px-6 lg:px-10 lg:pt-24`, секции разделены `mt-20 lg:mt-28`.
-- Hero: eyebrow 12px uppercase `tracking-wider text-muted`, `h1` 36/56px с `max-w-[20ch] leading-[1.1] tracking-tight`, абзац 18px `text-muted max-w-[38rem]`.
-- Кнопки hero: основная `w-auto h-11 px-6`, вторичная `h-11 px-6`, ряд `mt-8 flex flex-wrap items-center gap-3`; ниже 13px `text-muted` с чипом «Coming soon».
-- «What you get»: `h2` 24px и `grid gap-4 md:grid-cols-3`; карточки `rounded-[6px] border border-border bg-surface p-5`, иконка lucide 20px `text-accent` (`strokeWidth={1.5}`), `h3` 17px, абзац 15px `text-muted`.
-- Чип «Coming soon» у карточки Tickets — тот же, что в hero: `rounded-[4px] border border-border px-2 py-[2px] text-[13px] font-medium text-text`.
-- Панель «For organizers»: карточка `p-6 sm:p-8`, на `md` `flex items-center justify-between gap-8`; слева `h2` 24px и абзац 15px `max-w-[34rem]`, справа вторичная кнопка-ссылка `h-11 px-6 shrink-0`.
-- У всех ссылок и кнопок `focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none`; декоративные иконки скрыты через `aria-hidden`.
-
 ## Публичный режим (афиша)
 
-- Актуальный вид публичной части — «афиша»: крупная типографика, видимая сетка, тонкие линии `border-border`, моно-метаданные, один акцент; градиенты, тени, фото и скругления больше 4px запрещены.
+- Публичные страницы (`/`, `/login`, `/register`) работают через `PublicLayout` + `Outlet`: в `children` рядом с `index` лежат `login` и `register`. Без сайдбара и без переключателя темы: тема берётся из сохранённой на `<html>`.
+- Обёртка: `poster-background flex min-h-svh flex-col bg-bg text-text`; `main` — `relative z-10 flex-1`; подвал `relative z-10 border-t border-border`, внутри тот же контейнер `mx-auto w-full max-w-[72rem] px-4 py-6 sm:px-6 lg:px-10` с текстом «StageFlow · Festival Operations Platform» 12px `font-mono uppercase tracking-wider text-muted`. Контейнер и отступы конкретной страницы задаёт сама страница.
+- Стиль «афиша»: крупная типографика, видимая сетка, тонкие линии `border-border`, моно-метаданные, один акцент; градиенты, тени, фото и скругления больше 4px запрещены.
 - Фон страницы — очень тихая печатная сетка регистрационных крестиков: слой `.poster-background-grid` в `PublicLayout`, SVG `<pattern>` 112×112, штрих `currentColor` от `var(--border)`; слой `fixed inset-0 z-0 pointer-events-none aria-hidden`, контент выше через `relative z-10`.
+- Шапка: `sticky top-0 z-20 bg-bg border-b border-border`, высота `h-14 sm:h-16`, внутри `mx-auto flex h-14 w-full max-w-[72rem] items-center sm:h-16`; ячейки с `border-l border-border` и `px-2 sm:px-4` (на 320px иначе не влезает): слева `Brand` в ссылке на `/`, справа `ml-auto` — «For organizers» (на узком экране коротко «Organizers», mono 13px uppercase) и `AuthControl`. Старое расположение через `gap-2 sm:gap-4` и 15px ссылку заменили ячейками.
 - Новый шрифт не подключаем: `--font-display` указывает на Commissioner 900; для крупных заголовков используй `font-display font-black uppercase leading-[0.9] tracking-tight text-balance`.
 - Размер display-заголовков задаётся через clamp; hero использует `text-[clamp(2.25rem,10.5vw,10rem)]`, чтобы три строки помещались уже на 320px, без `overflow-wrap:anywhere`.
+- Лендинг: контейнер `mx-auto w-full max-w-[72rem] px-4 pt-10 sm:px-6 lg:px-10 lg:pt-16`, второй контейнер без верхнего отступа; секции разделены `mt-14`/`mt-16`, последняя с `pb-20`. Прежние `pt-14 pb-20` и `mt-20 lg:mt-28` устарели.
 - Строка метаданных над hero: контейнер, `border-b border-border py-3`, `font-mono text-[12px] uppercase tracking-wider text-muted`, слева «Festival operations & ticketing», справа «Running order · Stages · Set times» (скрыто на мобильном).
-- Шапка: `sticky top-0 z-20 bg-bg border-b border-border`, высота `h-14 sm:h-16`; ячейки с `border-l border-border` и `px-2 sm:px-4` (на 320px иначе не влезает): логотип, «For organizers» (на узком экране коротко «Organizers», mono 13px uppercase), `AuthControl`.
 - Hero: три строки `block` в одном `h1` — «Every set.», «Every stage.», «On time.»; третья строка `text-accent`, между строками оставляй пробел для корректного текста.
-- Под hero: абзац 18px `text-muted max-w-[38rem]`, кнопки `h-11 px-6` и чип «Coming soon» в стиле чипа сцены.
+- Под hero: абзац 18px `text-muted max-w-[38rem]`, кнопки `h-11 px-6` (основная `w-auto`) в ряд `mt-8 flex flex-wrap items-center gap-3` и чип «Coming soon» в стиле чипа сцены.
 - Пример расписания: карточка `border border-border bg-surface`, шапка `bg-bg border-b border-border`, 4 строки через `divide-y divide-border`, сетка `sm:grid-cols-[7.5rem_1fr_auto]`.
 - Имена артистов и «Headliner» растут по строкам через clamp; «Headliner» окрашивается в `text-accent`, время — `font-mono tabular-nums`.
 - Блок конфликта внутри карточки: `border-t border-border border-l-2 border-l-conflict bg-surface`, заголовок `text-conflict`, декоративный `aria-hidden="true"`.
 - Бегущая строка — full-bleed полоса `bg-accent text-accent-fg border-y border-border overflow-hidden py-3`, весь блок `aria-hidden="true"`.
 - Петля делается двумя идентичными половинами внутри `flex w-max animate-marquee`; ключ `stageflow-marquee` и класс объявлены в `index.css`, длительность 36s linear infinite.
 - При `prefers-reduced-motion: reduce` `.animate-marquee` отключается (`animation: none`, `transform: none`): остаётся статичная строка, обрезанная по ширине.
-- Карточки «What you get» — билеты: `rounded-[2px] border border-border bg-surface p-5`, индекс `01/02/03` цвета `text-accent`.
+- «What you get»: `h2` 24px и `grid gap-4 md:grid-cols-3`; карточки-билеты `rounded-[2px] border border-border bg-surface p-5`, индекс `01/02/03` цвета `text-accent`, иконка lucide 20px `text-accent` (`strokeWidth={1.5}`), `h3` 17px, абзац 15px `text-muted`. Прежние карточки `rounded-[6px]` и панель с `md:flex` устарели.
+- Чип «Coming soon» у карточки Tickets — тот же, что в hero: `rounded-[4px] border border-border px-2 py-[2px] text-[13px] font-medium text-text`.
 - Перфорация билета: `ticket-cutouts my-4 border-t border-dashed border-border`; вырезы `::before`/`::after` 14px цвета `bg-bg` с `border-border` смещены наполовину наружу.
 - Плашка организатора: `bg-accent text-accent-fg p-6 sm:p-10` без границы; h2 display 900 uppercase `text-[clamp(2.25rem,7vw,4.5rem)]`. Явно задавай `text-accent-fg` на самом h2: базовое правило `h2 { color: var(--text) }` иначе перебивает цвет родителя и даёт белый по лаймовому в тёмной теме.
 - Кнопка на акцентной плашке инвертирована: `bg-bg text-text`, hover `brightness-110`, фокус `ring-bg ring-offset-2 ring-offset-accent`.
-- Декоративные элементы (иконки, бегущая строка, вырезы, пример конфликта) скрыты через `aria-hidden`; у всех ссылок остаётся видимый `focus-visible` ring.
+- Вход и регистрация живут в этом же layout через `AuthCard`; детали — в разделе «Шаблон страницы входа / регистрации».
+- Декоративные элементы (иконки, регистрационные метки, бегущая строка, вырезы, пример конфликта) скрыты через `aria-hidden`; у всех ссылок и кнопок остаётся видимый `focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none`.
+
+## Паттерны консоли организатора (для страниц, которые будут созданы)
+
+Эти страницы пока не реализованы. Когда страница создаётся, применяй паттерны ниже вместе с шаблоном страницы с данными.
+
+**Шапка страницы.** Над `h1` строка-хлебные крошки 14px `text-muted` («Festivals / Open Air 2026»). Справа от `h1` действия (основная кнопка `h-10 px-4` и вторичная); на узком экране переносятся под заголовок.
+
+**Метка статуса (точка + текст).** Точка 8px (`size-2 rounded-full`) слева от текста 14px: Draft `bg-muted`, Published `bg-cool`, On sale `bg-text`, Live `bg-accent` (допустима пульсация, только вне reduced-motion), Finished `bg-muted/60` с текстом `text-muted/70`, Cancelled `bg-muted` с текстом `line-through text-muted`.
+
+**Степпер статуса.** Пять равных сегментов в ряд, у каждого линия сверху `h-[2px]` и подпись 13px под ней. Пройденные `bg-cool`, текущий `bg-accent` (подпись `text-text`), будущие `bg-border` (подпись `text-muted`).
+
+**Чипы-фильтры.** `h-8 rounded-[4px] border border-border px-3 text-[14px] text-muted hover:text-text`; активный: `border-accent text-text`. Кнопки (`type="button"`), группа с `gap-2`.
+
+**Таблица данных.** Карточка `overflow-hidden`; шапка `bg-bg px-5 py-3 text-[12px] font-medium uppercase tracking-wider text-muted`; строки `divide-y divide-border px-5 py-4`, hover как у строк расписания. Название `font-semibold text-text`; даты и числа `font-mono tabular-nums`; числовые колонки по правому краю. Отменённая строка: приглушённый цвет, название `line-through`. На узком экране таблица скроллится внутри контейнера (`overflow-x-auto`).
+
+**Карточка-показатель (Dashboard).** Карточка `p-5`: подпись 14px `text-muted`, значение Commissioner 600 `text-[36px] leading-none`, ниже пояснение 13px `text-muted`. Сетка `grid gap-4 sm:grid-cols-2 lg:grid-cols-4`.
+
+**Карточка сцены.** `p-5`: название Commissioner 600 20px, ниже мета `font-mono text-[14px] text-muted` («7 sets · next 19:30»), внизу вторичная кнопка на всю ширину («Rename»). Сетка по три колонки на `lg`.
+
+**Детали и боковая панель.** Две колонки (основная широкая, справа панель 21rem). Форма деталей: `grid gap-4 sm:grid-cols-2` из полей, textarea на всю ширину (`min-h-24`, стиль поля ввода). Боковой список (сцены): строки с названием слева и `font-mono text-muted` счётчиком справа, `divide-y divide-border`, внизу строка добавления (поле + вторичная кнопка).
+
+**Поиск и список-ростер.** Над таблицей справа поле поиска `w-64` (стиль поля ввода) и основная кнопка. Пустая строка/состояние: `text-muted`, без иконок.
+
+**Селект.** Тот же стиль, что у поля ввода (`h-10`, `rounded-[6px]`), собственная стрелка не рисуется, используем стандартную.
