@@ -2,7 +2,6 @@ import { useMutation } from "@tanstack/react-query";
 import { useState, type SubmitEvent } from "react";
 import { login } from "../api/authApi";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../auth/AuthContext";
 import { AuthCard } from "../components/AuthCard";
 import {
   errorBlockClassName,
@@ -10,6 +9,7 @@ import {
   labelClassName,
   primaryButtonClassName,
 } from "../components/formStyles";
+import { useAuth } from "../auth/useAuth";
 
 export function LoginPage() {
   const [email, setEmail] = useState("");
@@ -26,7 +26,7 @@ export function LoginPage() {
     onSuccess: (token) => {
       signIn(token);
 
-      navigate("/schedule");
+      navigate("/organizer");
     },
   });
 
@@ -78,11 +78,7 @@ export function LoginPage() {
         </button>
 
         {mutation.isError && (
-          <div
-            role="status"
-            aria-live="polite"
-            className={errorBlockClassName}
-          >
+          <div role="status" aria-live="polite" className={errorBlockClassName}>
             <p className="font-semibold text-conflict">Error</p>
             <p className="mt-0.5 break-words text-[15px] text-text">
               {mutation.error?.message}

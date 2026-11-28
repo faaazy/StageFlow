@@ -22,7 +22,7 @@ const navIconProps = {
 
 const navItems: { label: string; to?: string; icon: LucideIcon }[] = [
   { label: "Dashboard", icon: LayoutDashboard },
-  { label: "Festivals", icon: Flag },
+  { label: "Festivals", to: "festivals", icon: Flag },
   { label: "Schedule", to: "schedule", icon: Clock },
   { label: "Artists", icon: Mic },
   { label: "Stages", icon: Layers },

@@ -57,7 +57,5 @@ export async function createPerformance(
     throw new Error("Could not create performance.");
   }
 
-  const data = await res.json();
-
-  return data;
+  return await res.json();
 }

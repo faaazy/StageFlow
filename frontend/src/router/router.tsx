@@ -6,6 +6,7 @@ import { RegisterPage } from "../pages/RegisterPage";
 import { RequireAuth } from "../auth/RequireAuth";
 import { PublicLayout } from "../layouts/PublicLayout";
 import { LandingPage } from "../pages/LandingPage";
+import { FestivalsPage } from "../pages/FestivalsPage";
 
 export const router = createBrowserRouter([
   {
@@ -28,10 +29,8 @@ export const router = createBrowserRouter([
             index: true,
             element: <Navigate to="/organizer/schedule" replace />,
           },
-          {
-            path: "schedule",
-            element: <SchedulePage />,
-          },
+          { path: "schedule", element: <SchedulePage /> },
+          { path: "festivals", element: <FestivalsPage /> },
         ],
       },
     ],

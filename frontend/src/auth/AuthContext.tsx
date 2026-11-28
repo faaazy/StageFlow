@@ -1,13 +1,6 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { clearToken, getToken, setToken } from "./tokenStorage";
-
-type AuthContextValue = {
-  isAuthenticated: boolean;
-  signIn: (token: string) => void;
-  signOut: () => void;
-};
-
-const AuthContext = createContext<AuthContextValue | null>(null);
+import { AuthContext } from "./useAuth";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(
@@ -31,14 +24,4 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       {children}
     </AuthContext.Provider>
   );
-}
-
-export function useAuth() {
-  const ctx = useContext(AuthContext);
-
-  if (!ctx) {
-    throw new Error("useAuth must be used inside AuthProvider");
-  }
-
-  return ctx;
 }

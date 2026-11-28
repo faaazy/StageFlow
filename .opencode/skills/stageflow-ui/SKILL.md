@@ -154,6 +154,8 @@ description: Visual style guide for the StageFlow frontend (React + Tailwind v4)
 
 Эти страницы пока не реализованы. Когда страница создаётся, применяй паттерны ниже вместе с шаблоном страницы с данными.
 
+Образцы: `FestivalsPage` (таблица), `FestivalStatusLabel` (метка статуса), `StatusAlert` (общий блок сообщения).
+
 **Шапка страницы.** Над `h1` строка-хлебные крошки 14px `text-muted` («Festivals / Open Air 2026»). Справа от `h1` действия (основная кнопка `h-10 px-4` и вторичная); на узком экране переносятся под заголовок.
 
 **Метка статуса (точка + текст).** Точка 8px (`size-2 rounded-full`) слева от текста 14px: Draft `bg-muted`, Published `bg-cool`, On sale `bg-text`, Live `bg-accent` (допустима пульсация, только вне reduced-motion), Finished `bg-muted/60` с текстом `text-muted/70`, Cancelled `bg-muted` с текстом `line-through text-muted`.

@@ -34,12 +34,14 @@ const features: {
   {
     icon: Mic,
     title: "Stages and artists",
-    description: "See who plays on which stage, with no overlaps and no guesswork.",
+    description:
+      "See who plays on which stage, with no overlaps and no guesswork.",
   },
   {
     icon: Ticket,
     title: "Tickets",
-    description: "Buy tickets and keep them in one place, with a QR code for entry.",
+    description:
+      "Buy tickets and keep them in one place, with a QR code for entry.",
     comingSoon: true,
   },
 ];
@@ -78,7 +80,8 @@ const lineup: {
   },
 ];
 
-const marqueeLine = "Set times · Stages · Artists · No overlaps · Tickets soon · ";
+const marqueeLine =
+  "Set times · Stages · Artists · No overlaps · Tickets soon · ";
 const marqueeHalf = marqueeLine.repeat(3);
 
 export function LandingPage() {
@@ -189,41 +192,40 @@ export function LandingPage() {
             What you get
           </h2>
           <div className="grid gap-4 md:grid-cols-3">
-            {features.map(({ icon: Icon, title, description, comingSoon }, index) => (
-              <article
-                key={title}
-                className="rounded-[2px] border border-border bg-surface p-5"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-[12px] font-medium text-accent">
-                    0{index + 1}
-                  </span>
-                </div>
+            {features.map(
+              ({ icon: Icon, title, description, comingSoon }, index) => (
+                <article
+                  key={title}
+                  className="rounded-[2px] border border-border bg-surface p-5"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-[12px] font-medium text-accent">
+                      0{index + 1}
+                    </span>
+                  </div>
 
-                <div
-                  aria-hidden="true"
-                  className="ticket-cutouts my-4 border-t border-dashed border-border"
-                />
+                  <div
+                    aria-hidden="true"
+                    className="ticket-cutouts my-4 border-t border-dashed border-border"
+                  />
 
-                <Icon {...cardIconProps} />
-                <div className="mt-4 flex items-center justify-between gap-2">
-                  <h3 className="text-[17px] font-semibold">{title}</h3>
-                  {comingSoon && (
-                    <span className={chipClassName}>Coming soon</span>
-                  )}
-                </div>
-                <p className="mt-2 text-[15px] leading-relaxed text-muted">
-                  {description}
-                </p>
-              </article>
-            ))}
+                  <Icon {...cardIconProps} />
+                  <div className="mt-4 flex items-center justify-between gap-2">
+                    <h3 className="text-[17px] font-semibold">{title}</h3>
+                    {comingSoon && (
+                      <span className={chipClassName}>Coming soon</span>
+                    )}
+                  </div>
+                  <p className="mt-2 text-[15px] leading-relaxed text-muted">
+                    {description}
+                  </p>
+                </article>
+              ),
+            )}
           </div>
         </section>
 
-        <section
-          aria-labelledby="organizers-title"
-          className="mt-16 pb-20"
-        >
+        <section aria-labelledby="organizers-title" className="mt-16 pb-20">
           <div className="rounded-[2px] bg-accent p-6 text-accent-fg sm:p-10">
             <p className="font-mono text-[12px] uppercase tracking-wider">
               For organizers
@@ -235,10 +237,13 @@ export function LandingPage() {
               Organizing a festival?
             </h2>
             <p className="mt-4 max-w-[34rem] text-[17px] leading-relaxed text-accent-fg">
-              Create festivals, add stages and artists, and build a schedule that
-              never double-books a stage.
+              Create festivals, add stages and artists, and build a schedule
+              that never double-books a stage.
             </p>
-            <Link to="/organizer" className={`${organizerButtonClassName} mt-6`}>
+            <Link
+              to="/organizer"
+              className={`${organizerButtonClassName} mt-6`}
+            >
               For organizers
             </Link>
           </div>

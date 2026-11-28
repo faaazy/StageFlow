@@ -72,11 +72,7 @@ export function RegisterPage() {
         </button>
 
         {mutation.isError && (
-          <div
-            role="status"
-            aria-live="polite"
-            className={errorBlockClassName}
-          >
+          <div role="status" aria-live="polite" className={errorBlockClassName}>
             <p className="font-semibold text-conflict">Error</p>
             <p className="mt-0.5 break-words text-[15px] text-text">
               {mutation.error?.message}
